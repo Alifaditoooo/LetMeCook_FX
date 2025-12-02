@@ -1,5 +1,7 @@
 cooked\Koneksi.class
+cooked\UploadController.class
 cooked\User.class
+cooked\BerandaController.class
 cooked\Resep.class
 cooked\App.class
 cooked\LoginController.class

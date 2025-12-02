@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox spacing="15.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cooked.UploadController">
+   <padding>
+      <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+   </padding>
+   <children>
+      <Label text="Upload Resep Baru">
+         <font>
+            <Font name="System Bold" size="24.0" />
+         </font>
+      </Label>
+      
+      <Label text="Judul Resep" />
+      <TextField fx:id="inputJudul" promptText="Contoh: Nasi Goreng Spesial" />
+      
+      <Label text="Deskripsi Singkat" />
+      <TextArea fx:id="inputDeskripsi" prefHeight="60.0" promptText="Ceritakan sedikit tentang resep ini..." />
+      
+      <HBox spacing="20.0">
+         <children>
+            <VBox spacing="5.0" HBox.hgrow="ALWAYS">
+               <children>
+                  <Label text="Bahan-bahan (Pisahkan dengan Enter)" />
+                  <TextArea fx:id="inputBahan" prefHeight="100.0" promptText="- Bawang&#10;- Telur&#10;- Nasi" />
+               </children>
+            </VBox>
+            <VBox spacing="5.0" HBox.hgrow="ALWAYS">
+               <children>
+                  <Label text="Langkah-langkah (Pisahkan dengan Enter)" />
+                  <TextArea fx:id="inputLangkah" prefHeight="100.0" promptText="1. Panaskan wajan...&#10;2. Masukkan telur..." />
+               </children>
+            </VBox>
+         </children>
+      </HBox>
+      
+      <Label text="Foto Masakan" />
+      <HBox alignment="CENTER_LEFT" spacing="15.0">
+         <children>
+            <Button mnemonicParsing="false" onAction="#pilihGambar" text="Pilih Gambar..." />
+            <Label fx:id="lblNamaFile" text="Belum ada file dipilih" textFill="#777777" />
+         </children>
+      </HBox>
+      <ImageView fx:id="previewGambar" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" />
+      
+      <HBox alignment="CENTER_RIGHT" spacing="10.0">
+         <children>
+            <Button mnemonicParsing="false" onAction="#batalUpload" text="Batal" />
+            <Button mnemonicParsing="false" onAction="#submitResep" style="-fx-background-color: #2D8BC5;" text="Upload Sekarang" textFill="WHITE">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+            </Button>
+         </children>
+      </HBox>
+   </children>
+</VBox>
