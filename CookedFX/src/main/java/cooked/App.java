@@ -4,24 +4,31 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import java.io.IOException;
 
 
 public class App extends Application {
 
+    private static Scene scene;
+
     @Override
     public void start(Stage stage) throws IOException {
-      
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("login.fxml"));
-        
-       
-        Parent root = loader.load();
 
+       FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("Home.fxml"));
         
-        Scene scene = new Scene(root);
+        // Memuat FXML
+        Parent root = fxmlLoader.load();
+        
+        
+        scene = new Scene(root);
+        
+        
+        stage.setTitle("Let Me Cook!");
+        
+        
         stage.setScene(scene);
-        stage.setTitle("Cooked App - Login"); 
         stage.show();
     }
 

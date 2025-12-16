@@ -18,13 +18,12 @@ public class LayananResep {
     private final String UPLOAD_DIRECTORY = "C:\\CookedUploads\\";
     private Connection conn = Koneksi.getKoneksi();
     
-    // WAJIB STATIC: Agar data user tersimpan meski pindah halaman
+    
     private static User userSaatIni; 
 
-    // --- PERBAIKAN 1: CONSTRUCTOR KOSONG ---
+   
     public LayananResep() {
-        // JANGAN ADA KODE: this.userSaatIni = null; DI SINI!
-        // Biarkan kosong agar status login tidak ter-reset.
+        
     }
     
     public User getUserSaatIni() {
@@ -34,7 +33,7 @@ public class LayananResep {
     public void logout() {
         if(userSaatIni != null) {
             System.out.println("Logout berhasil, " + userSaatIni.getUsername());
-            userSaatIni = null; // Hapus user HANYA saat logout dipanggil
+            userSaatIni = null; 
         }
     }
 
@@ -47,7 +46,7 @@ public class LayananResep {
                 if (rs.next()) {
                     int userId = rs.getInt("user_id");
                     String userNama = rs.getString("username");
-                    userSaatIni = new User(userId, userNama); // Simpan ke static
+                    userSaatIni = new User(userId, userNama); 
                     System.out.println("Login berhasil! Selamat datang, " + userNama);
                     return true;
                 } else {
@@ -118,7 +117,7 @@ public class LayananResep {
             
             ps.executeUpdate();
             
-            // --- PERBAIKAN 2: Syntax Error Diperbaiki ---
+   
             System.out.println("Resep '" + judul + "' berhasil disimpan ke database!");
             
             return true;
