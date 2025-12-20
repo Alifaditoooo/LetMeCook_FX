@@ -4,44 +4,154 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.HBox?> <?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.BerandaController">
-   <top>
-      <ToolBar prefHeight="50.0" prefWidth="200.0" style="-fx-background-color: #EEBF43;" BorderPane.alignment="CENTER">
-        <items>
-            <Label text="COOKED FEED" textFill="#c54f2d">
-               <font>
-                  <Font name="System Bold" size="20.0" />
-               </font>
+<BorderPane fx:controller="controller.BerandaController" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="1366.0" style="-fx-background-color: #FFF8E7;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1">
+   
+   <left>
+      <VBox prefHeight="768.0" prefWidth="250.0" spacing="10.0" style="-fx-background-color: #FF451F; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 10, 0, 0, 0);" BorderPane.alignment="CENTER">
+         <children>
+            <VBox alignment="CENTER" spacing="5.0">
+               <children>
+                  <ImageView fitHeight="80.0" fitWidth="80.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                         <Image url="@bg_home.png" /> 
+                     </image>
+                  </ImageView>
+                  <Label fx:id="lblUsername" text="Chef User" textFill="WHITE">
+                     <font>
+                        <Font name="System Bold" size="18.0" />
+                     </font>
+                  </Label>
+               </children>
                <padding>
-                  <Insets right="20.0" />
-               </padding>
-            </Label>
-            
-            <Button fx:id="btnRefresh" mnemonicParsing="false" onAction="#refreshFeed" text="Refresh" />
-            
-            <Button fx:id="btnUpload" mnemonicParsing="false" onAction="#bukaHalamanUpload" style="-fx-background-color: #2D8BC5;" text="Upload Resep Baru" textFill="WHITE" />
-            
-            <Pane HBox.hgrow="ALWAYS" /> 
-            
-            <Button fx:id="btnLogout" mnemonicParsing="false" onAction="#handleLogout" text="Logout" />
-        </items>
-      </ToolBar>
-   </top>
-   <center>
-      <ScrollPane fitToWidth="true" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-         <content>
-            <VBox fx:id="feedContainer" spacing="20.0" style="-fx-background-color: #f4f4f4;">
-               <padding>
-                  <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                  <Insets bottom="20.0" top="30.0" />
                </padding>
             </VBox>
-         </content>
-      </ScrollPane>
+
+            <Label text="MENU" textFill="#FFD180"> <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+               <VBox.margin>
+                  <Insets left="20.0" />
+               </VBox.margin>
+            </Label>
+
+            <Button alignment="BASELINE_LEFT" mnemonicParsing="false" prefHeight="45.0" prefWidth="250.0" style="-fx-background-color: WHITE; -fx-text-fill: #FF451F; -fx-background-radius: 30 0 0 30;" text="Beranda">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+               <padding>
+                  <Insets left="20.0" />
+               </padding>
+               <VBox.margin>
+                  <Insets left="10.0" /> 
+               </VBox.margin>
+            </Button>
+
+            <Button alignment="BASELINE_LEFT" mnemonicParsing="false" prefHeight="45.0" prefWidth="250.0" style="-fx-background-color: transparent; -fx-text-fill: WHITE;" text="Teman">
+               <font>
+                  <Font size="14.0" />
+               </font>
+               <padding>
+                  <Insets left="20.0" />
+               </padding>
+            </Button>
+
+            <Button alignment="BASELINE_LEFT" mnemonicParsing="false" prefHeight="45.0" prefWidth="250.0" style="-fx-background-color: transparent; -fx-text-fill: WHITE;" text="Histori">
+               <font>
+                  <Font size="14.0" />
+               </font>
+               <padding>
+                  <Insets left="20.0" />
+               </padding>
+            </Button>
+
+            <Button alignment="BASELINE_LEFT" mnemonicParsing="false" prefHeight="45.0" prefWidth="250.0" style="-fx-background-color: transparent; -fx-text-fill: WHITE;" text="Disukai">
+               <font>
+                  <Font size="14.0" />
+               </font>
+               <padding>
+                  <Insets left="20.0" />
+               </padding>
+            </Button>
+
+            <Region VBox.vgrow="ALWAYS" />
+
+            <Button fx:id="btnUpload" mnemonicParsing="false" onAction="#bukaHalamanUpload" prefHeight="50.0" prefWidth="210.0" style="-fx-background-color: WHITE; -fx-background-radius: 10; -fx-cursor: hand;" text="+ Menambah Resep" textFill="#FF451F">
+               <font>
+                  <Font name="System Bold" size="16.0" />
+               </font>
+               <VBox.margin>
+                  <Insets bottom="20.0" left="20.0" />
+               </VBox.margin>
+            </Button>
+            
+            <Button fx:id="btnLogout" mnemonicParsing="false" onAction="#handleLogout" prefHeight="40.0" prefWidth="210.0" style="-fx-background-color: #D32F2F; -fx-background-radius: 10; -fx-cursor: hand;" text="Logout" textFill="WHITE">
+               <VBox.margin>
+                  <Insets bottom="20.0" left="20.0" />
+               </VBox.margin>
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+            </Button>
+
+         </children>
+      </VBox>
+   </left>
+
+   <center>
+      <VBox prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
+         <children>
+            <HBox alignment="CENTER_LEFT" prefHeight="60.0" prefWidth="1116.0" spacing="30.0" style="-fx-background-color: #FFF8E7;">
+               <padding>
+                  <Insets left="30.0" right="30.0" />
+               </padding>
+               <children>
+                  <Label text="For you" textFill="#ff451f">
+                     <font>
+                        <Font name="System Bold" size="18.0" />
+                     </font>
+                     <style>-fx-border-color: transparent transparent #FF451F transparent; -fx-border-width: 0 0 2 0;</style>
+                  </Label>
+                  <Label text="Populer" textFill="#999999">
+                     <font>
+                        <Font name="System Bold" size="18.0" />
+                     </font>
+                  </Label>
+                  <Region HBox.hgrow="ALWAYS" />
+                  <TextField promptText="Cari resep..." style="-fx-background-radius: 20; -fx-border-color: #FFCCBC; -fx-border-radius: 20; -fx-background-color: white;" />
+               </children>
+            </HBox>
+
+            <ScrollPane fitToWidth="true" hbarPolicy="NEVER" style="-fx-background-color: transparent; -fx-background: transparent;" VBox.vgrow="ALWAYS">
+               <content>
+                  <FlowPane fx:id="feedContainer" hgap="20.0" vgap="20.0" style="-fx-background-color: #FFF8E7;">
+                     <padding>
+                        <Insets bottom="30.0" left="30.0" right="30.0" top="30.0" />
+                     </padding>
+                  </FlowPane>
+               </content>
+            </ScrollPane>
+            
+            <HBox alignment="CENTER" prefHeight="50.0" spacing="10.0" style="-fx-background-color: #FFF8E7;">
+               <children>
+                  <Button style="-fx-background-color: transparent; -fx-border-color: #FFAB91; -fx-text-fill: #FF451F;" text="&lt;" />
+                  <Button style="-fx-background-color: #FF451F; -fx-text-fill: white;" text="1" />
+                  <Button style="-fx-background-color: transparent; -fx-border-color: #FFAB91; -fx-text-fill: #FF451F;" text="2" />
+                  <Button style="-fx-background-color: transparent; -fx-border-color: #FFAB91; -fx-text-fill: #FF451F;" text="3" />
+                  <Button style="-fx-background-color: transparent; -fx-border-color: #FFAB91; -fx-text-fill: #FF451F;" text="&gt;" />
+               </children>
+            </HBox>
+         </children>
+      </VBox>
    </center>
 </BorderPane>

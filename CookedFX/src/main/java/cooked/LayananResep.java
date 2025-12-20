@@ -1,187 +1,133 @@
 package cooked;
 
-import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class LayananResep {
-    
-    private final String UPLOAD_DIRECTORY = "C:\\CookedUploads\\";
-    private Connection conn = Koneksi.getKoneksi();
-    
-    
-    private static User userSaatIni; 
 
-   
+    // --- DATABASE SEMENTARA (STATIC) ---
+    // List Resep
+    private static List<Resep> databaseResep = new ArrayList<>();
+    // List Teman
+    private static List<String> temanSaya = new ArrayList<>(); 
+    // List User (UNTUK LOGIN & REGISTER) - INI YANG TADI HILANG
+    private static List<User> databaseUser = new ArrayList<>();
+    
+    // Menyimpan siapa yang sedang login sekarang
+    private static User currentUser;
+
     public LayananResep() {
-        
-    }
-    
-    public User getUserSaatIni() {
-        return userSaatIni;
-    }
-    
-    public void logout() {
-        if(userSaatIni != null) {
-            System.out.println("Logout berhasil, " + userSaatIni.getUsername());
-            userSaatIni = null; 
+        // Constructor kosong
+        // Kita bisa isi satu user dummy buat ngetes login kalau mau
+        if (databaseUser.isEmpty()) {
+            User admin = new User();
+            admin.setUsername("tes_user");
+            admin.setPassword("12345");
+            databaseUser.add(admin);
         }
+    }
+
+    // ==========================================
+    // 1. BAGIAN AUTHENTICATION (LOGIN & REGISTER)
+    // ==========================================
+
+    public boolean register(String username, String password) {
+        // Cek apakah username sudah dipakai orang lain
+        for (User u : databaseUser) {
+            if (u.getUsername().equals(username)) {
+                return false; // Gagal, username sudah ada
+            }
+        }
+        
+        // Buat user baru
+        User newUser = new User();
+        newUser.setUsername(username);
+        newUser.setPassword(password);
+        
+        // Simpan ke database list
+        databaseUser.add(newUser);
+        return true; // Berhasil register
     }
 
     public boolean login(String username, String password) {
-        String sql = "SELECT * FROM users WHERE username = ? AND password = ?";
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, username);
-            ps.setString(2, password);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    int userId = rs.getInt("user_id");
-                    String userNama = rs.getString("username");
-                    userSaatIni = new User(userId, userNama); 
-                    System.out.println("Login berhasil! Selamat datang, " + userNama);
-                    return true;
-                } else {
-                    System.out.println("Error: Username atau password salah.");
-                    return false;
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    public boolean register(String username, String password) {
-        String sql = "INSERT INTO users (username, password) VALUES (?, ?)";
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, username);
-            ps.setString(2, password); 
-            ps.executeUpdate();
-            System.out.println("Registrasi berhasil untuk: " + username);
-            return true;
-        } catch (SQLException e) {
-            if (e.getSQLState().equals("23000")) { 
-                System.out.println("Error: Username '" + username + "' sudah terdaftar!");
-            } else {
-                System.out.println("Error database saat register: " + e.getMessage());
-            }
-            return false;
-        }
-    }
-
-    public boolean buatResep(String judul, String deskripsi, List<String> daftarBahan, List<String> langkahLangkah, File fileGambar) {
-        if (userSaatIni == null) {
-            System.out.println("Error: Anda harus login untuk membuat resep.");
-            return false;
-        }
-
-        String namaFileUnik = null;
-        if (fileGambar != null) {
-            try {
-                Path folderUpload = Paths.get(UPLOAD_DIRECTORY);
-                if (!Files.exists(folderUpload)) {
-                    Files.createDirectories(folderUpload);
-                }
-                String extension = fileGambar.getName().substring(fileGambar.getName().lastIndexOf("."));
-                namaFileUnik = UUID.randomUUID().toString() + extension;
-                Path pathTujuan = Paths.get(UPLOAD_DIRECTORY + namaFileUnik);
-                Files.copy(fileGambar.toPath(), pathTujuan, StandardCopyOption.REPLACE_EXISTING);
-            } catch (Exception e) {
-                e.printStackTrace();
-                System.out.println("Error saat upload file! Resep dibatalkan.");
-                return false; 
+        // Cari user yang cocok
+        for (User u : databaseUser) {
+            if (u.getUsername().equals(username) && u.getPassword().equals(password)) {
+                currentUser = u; // Set siapa yang login
+                return true; // Login sukses
             }
         }
-        
-        String bahanText = String.join("\n", daftarBahan);
-        String langkahText = String.join("\n", langkahLangkah);
-
-        String sql = "INSERT INTO resep (user_id_penulis, judul, deskripsi, bahan, langkah, gambar_filename) VALUES (?, ?, ?, ?, ?, ?)";
-        
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, userSaatIni.getId());
-            ps.setString(2, judul);
-            ps.setString(3, deskripsi);
-            ps.setString(4, bahanText);
-            ps.setString(5, langkahText);
-            ps.setString(6, namaFileUnik);
-            
-            ps.executeUpdate();
-            
-   
-            System.out.println("Resep '" + judul + "' berhasil disimpan ke database!");
-            
-            return true;
-            
-        } catch (SQLException e) {
-            e.printStackTrace();
-            System.out.println("Error database saat simpan resep: " + e.getMessage());
-            return false;
-        }
+        return false; // Login gagal
     }
+    
+    public void logout() {
+        currentUser = null;
+    }
+    
+    // Method helper untuk mengambil username yang sedang login
+    public String getCurrentUsername() {
+        if (currentUser != null) {
+            return currentUser.getUsername();
+        }
+        return "Chef Tamu"; // Default jika belum login
+    }
+
+    // ==========================================
+    // 2. BAGIAN RESEP (FITUR UTAMA)
+    // ==========================================
 
     public List<Resep> getSemuaResep() {
-        List<Resep> daftarResep = new ArrayList<>();
-        String sql = "SELECT r.*, u.username AS penulis FROM resep r JOIN users u ON r.user_id_penulis = u.user_id ORDER BY r.resep_id DESC";
-
-        try (PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
-            while (rs.next()) {
-                Resep resep = new Resep(
-                    rs.getInt("resep_id"),
-                    rs.getString("judul"),
-                    rs.getString("deskripsi"),
-                    rs.getString("bahan"),
-                    rs.getString("langkah"),
-                    rs.getInt("jumlahLike"),
-                    rs.getString("penulis"),
-                    rs.getString("gambar_filename")
-                );
-                daftarResep.add(resep);
-            }
-        } catch (SQLException e) {
-            System.out.println("Error mengambil semua resep: " + e.getMessage());
-        }
-        return daftarResep; 
+        return new ArrayList<>(databaseResep);
     }
 
-    public List<Resep> getResepSaya() {
-        List<Resep> resepSaya = new ArrayList<>();
-        if (userSaatIni == null) return resepSaya;
-
-        String sql = "SELECT r.*, u.username AS penulis FROM resep r JOIN users u ON r.user_id_penulis = u.user_id WHERE r.user_id_penulis = ? ORDER BY r.resep_id DESC";
-
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, userSaatIni.getId());
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    Resep resep = new Resep(
-                        rs.getInt("resep_id"),
-                        rs.getString("judul"),
-                        rs.getString("deskripsi"),
-                        rs.getString("bahan"),
-                        rs.getString("langkah"),
-                        rs.getInt("jumlahLike"),
-                        rs.getString("penulis"),
-                        rs.getString("gambar_filename")
-                    );
-                    resepSaya.add(resep);
-                }
-            }
-        } catch (SQLException e) {
-            System.out.println("Error mengambil resep saya: " + e.getMessage());
+    // Method Simpan Resep Baru
+    public void tambahResepBaru(Resep resepBaru) {
+        // Otomatis set penulis sesuai user yang sedang login
+        if (currentUser != null) {
+            resepBaru.setPenulisUsername(currentUser.getUsername());
         }
-        return resepSaya;
+        // Tambah ke paling atas
+        databaseResep.add(0, resepBaru);
+    }
+
+    public List<Resep> getResepPopuler() {
+        List<Resep> salinan = new ArrayList<>(databaseResep);
+        salinan.sort((r1, r2) -> Integer.compare(r2.getJumlahLike(), r1.getJumlahLike()));
+        return salinan;
+    }
+
+    public List<Resep> getResepDisukai() {
+        return databaseResep.stream()
+                .filter(Resep::isDisukaiOlehSaya)
+                .collect(Collectors.toList());
+    }
+
+    public List<Resep> getResepTeman() {
+        return databaseResep.stream()
+                .filter(resep -> temanSaya.contains(resep.getPenulisUsername()))
+                .collect(Collectors.toList());
+    }
+
+    // --- FITUR LIKE & FOLLOW ---
+
+    public void toggleLike(Resep resep) {
+        if (resep.isDisukaiOlehSaya()) {
+            resep.setDisukaiOlehSaya(false);
+            resep.setJumlahLike(resep.getJumlahLike() - 1);
+        } else {
+            resep.setDisukaiOlehSaya(true);
+            resep.tambahLike();
+        }
+    }
+
+    public void tambahTeman(String usernameChef) {
+        if (!temanSaya.contains(usernameChef)) {
+            temanSaya.add(usernameChef);
+        }
     }
     
-    
+    public boolean isTeman(String usernameChef) {
+        return temanSaya.contains(usernameChef);
+    }
 }

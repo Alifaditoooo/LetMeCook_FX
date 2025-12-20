@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="1366.0" style="-fx-background-color: #FFCC80;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.ResepDetailController">
+
+   <left>
+      <VBox prefHeight="768.0" prefWidth="250.0" spacing="10.0" style="-fx-background-color: #FFB74D; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 0);" BorderPane.alignment="CENTER">
+         <children>
+            <VBox alignment="CENTER" spacing="5.0">
+               <children>
+                  <ImageView fitHeight="80.0" fitWidth="80.0" pickOnBounds="true" preserveRatio="true">
+                     <image><Image url="@bg_home.png" /></image>
+                  </ImageView>
+                  <Label text="Chef Kamu" textFill="WHITE"><font><Font name="System Bold" size="18.0" /></font></Label>
+               </children>
+               <padding><Insets bottom="20.0" top="30.0" /></padding>
+            </VBox>
+            <Label text="MENU" textFill="#FFF3E0"><font><Font name="System Bold" size="12.0" /></font><VBox.margin><Insets left="20.0" /></VBox.margin></Label>
+            
+            <Button onAction="#handleBack" alignment="BASELINE_LEFT" prefHeight="45.0" prefWidth="250.0" style="-fx-background-color: WHITE; -fx-text-fill: #E65100; -fx-background-radius: 30 0 0 30;" text="Kembali ke Beranda">
+               <font><Font name="System Bold" size="14.0" /></font><padding><Insets left="20.0" /></padding><VBox.margin><Insets left="10.0" /></VBox.margin>
+            </Button>
+         </children>
+      </VBox>
+   </left>
+
+   <center>
+      <ScrollPane fitToWidth="true" style="-fx-background-color: transparent; -fx-background: #FFCC80;" BorderPane.alignment="CENTER">
+         <content>
+            <VBox spacing="20.0" style="-fx-background-color: #FFCC80;">
+               <padding><Insets bottom="40.0" left="40.0" right="40.0" top="20.0" /></padding>
+               <children>
+
+                  <Label fx:id="lblJudulHeader" alignment="CENTER" maxWidth="Infinity" style="-fx-background-color: #FFE0B2; -fx-background-radius: 15;" text="NAMA RESEP" textFill="#E65100">
+                     <font><Font name="System Bold" size="36.0" /></font>
+                     <padding><Insets bottom="10.0" top="10.0" /></padding>
+                  </Label>
+
+                  <HBox spacing="30.0" prefHeight="350.0">
+                     <ImageView fx:id="imgResepHeader" fitHeight="350.0" fitWidth="500.0" pickOnBounds="true" style="-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 10, 0, 0, 0);">
+                        <image><Image url="@bg_home.png" /></image>
+                        </ImageView>
+
+                     <VBox spacing="15.0" style="-fx-background-color: #FFE0B2; -fx-background-radius: 20; -fx-padding: 20;" HBox.hgrow="ALWAYS">
+                        <HBox alignment="CENTER_LEFT" spacing="15.0">
+                           <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                              <image><Image url="@bg_home.png" /></image> </ImageView>
+                           <VBox>
+                               <Label fx:id="lblPenulis" text="Nama User" textFill="#E65100"><font><Font name="System Bold" size="18.0" /></font></Label>
+                               <Label fx:id="lblLikeCount" text="❤ 0 Like" textFill="#D84315"><font><Font size="14.0" /></font></Label>
+                           </VBox>
+                           <Region HBox.hgrow="ALWAYS" />
+                           <Button fx:id="btnLike" text="LIKE ❤" style="-fx-background-color: #FF5722; -fx-text-fill: white; -fx-background-radius: 20; -fx-font-weight: bold; -fx-cursor: hand;"/>
+                        </HBox>
+                        
+                        <Label fx:id="lblDeskripsi" text="Caption yang user berikan..." textFill="#5D4037" wrapText="true" VBox.vgrow="ALWAYS">
+                           <font><Font size="16.0" /></font>
+                        </Label>
+                     </VBox>
+                  </HBox>
+
+                  <HBox spacing="30.0">
+                     <VBox spacing="10.0" HBox.hgrow="ALWAYS">
+                        <Label style="-fx-background-color: WHITE; -fx-background-radius: 10; -fx-padding: 5 15;" text="Bahan" textFill="#E65100">
+                           <font><Font name="System Bold" size="18.0" /></font>
+                        </Label>
+                        <VBox style="-fx-background-color: #FFE0B2; -fx-background-radius: 20; -fx-padding: 20; -fx-min-height: 200;">
+                           <children>
+                              <Label fx:id="lblBahan" text="- Bahan 1&#10;- Bahan 2" textFill="#5D4037" wrapText="true">
+                                 <font><Font size="16.0" /></font>
+                              </Label>
+                           </children>
+                        </VBox>
+                     </VBox>
+
+                     <VBox spacing="10.0" HBox.hgrow="ALWAYS">
+                        <Label style="-fx-background-color: WHITE; -fx-background-radius: 10; -fx-padding: 5 15;" text="Langkah" textFill="#E65100">
+                           <font><Font name="System Bold" size="18.0" /></font>
+                        </Label>
+                        <VBox style="-fx-background-color: #FFE0B2; -fx-background-radius: 20; -fx-padding: 20; -fx-min-height: 200;">
+                           <children>
+                              <Label fx:id="lblLangkah" text="1. Langkah pertama...&#10;2. Langkah kedua..." textFill="#5D4037" wrapText="true">
+                                 <font><Font size="16.0" /></font>
+                              </Label>
+                           </children>
+                        </VBox>
+                     </VBox>
+                  </HBox>
+
+               </children>
+            </VBox>
+         </content>
+      </ScrollPane>
+   </center>
+</BorderPane>
