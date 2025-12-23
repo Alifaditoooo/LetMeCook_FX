@@ -23,7 +23,7 @@
                <children>
                   <ImageView fitHeight="80.0" fitWidth="80.0" pickOnBounds="true" preserveRatio="true">
                      <image>
-                         <Image url="@bg_home.png" /> 
+                        <Image url="@bg_home.png" /> 
                      </image>
                   </ImageView>
                   <Label fx:id="lblUsername" text="Chef User" textFill="WHITE">
@@ -37,7 +37,8 @@
                </padding>
             </VBox>
 
-            <Label text="MENU" textFill="#FFD180"> <font>
+            <Label text="MENU" textFill="#FFD180">
+               <font>
                   <Font name="System Bold" size="12.0" />
                </font>
                <VBox.margin>
@@ -45,7 +46,7 @@
                </VBox.margin>
             </Label>
 
-            <Button alignment="BASELINE_LEFT" mnemonicParsing="false" prefHeight="45.0" prefWidth="250.0" style="-fx-background-color: WHITE; -fx-text-fill: #FF451F; -fx-background-radius: 30 0 0 30;" text="Beranda">
+            <Button onAction="#loadBeranda" alignment="BASELINE_LEFT" mnemonicParsing="false" prefHeight="45.0" prefWidth="250.0" style="-fx-background-color: WHITE; -fx-text-fill: #FF451F; -fx-background-radius: 30 0 0 30; -fx-cursor: hand;" text="Beranda">
                <font>
                   <Font name="System Bold" size="14.0" />
                </font>
@@ -57,7 +58,7 @@
                </VBox.margin>
             </Button>
 
-            <Button alignment="BASELINE_LEFT" mnemonicParsing="false" prefHeight="45.0" prefWidth="250.0" style="-fx-background-color: transparent; -fx-text-fill: WHITE;" text="Teman">
+            <Button onAction="#loadTeman" alignment="BASELINE_LEFT" mnemonicParsing="false" prefHeight="45.0" prefWidth="250.0" style="-fx-background-color: transparent; -fx-text-fill: WHITE; -fx-cursor: hand;" text="Teman">
                <font>
                   <Font size="14.0" />
                </font>
@@ -66,7 +67,7 @@
                </padding>
             </Button>
 
-            <Button alignment="BASELINE_LEFT" mnemonicParsing="false" prefHeight="45.0" prefWidth="250.0" style="-fx-background-color: transparent; -fx-text-fill: WHITE;" text="Histori">
+            <Button onAction="#loadDisukai" alignment="BASELINE_LEFT" mnemonicParsing="false" prefHeight="45.0" prefWidth="250.0" style="-fx-background-color: transparent; -fx-text-fill: WHITE; -fx-cursor: hand;" text="Histori">
                <font>
                   <Font size="14.0" />
                </font>
@@ -75,7 +76,7 @@
                </padding>
             </Button>
 
-            <Button alignment="BASELINE_LEFT" mnemonicParsing="false" prefHeight="45.0" prefWidth="250.0" style="-fx-background-color: transparent; -fx-text-fill: WHITE;" text="Disukai">
+            <Button onAction="#loadDisukai" alignment="BASELINE_LEFT" mnemonicParsing="false" prefHeight="45.0" prefWidth="250.0" style="-fx-background-color: transparent; -fx-text-fill: WHITE; -fx-cursor: hand;" text="Disukai">
                <font>
                   <Font size="14.0" />
                </font>
@@ -116,17 +117,19 @@
                   <Insets left="30.0" right="30.0" />
                </padding>
                <children>
-                  <Label text="For you" textFill="#ff451f">
+                  <Label onMouseClicked="#loadBeranda" text="For you" textFill="#ff451f" style="-fx-cursor: hand;">
                      <font>
                         <Font name="System Bold" size="18.0" />
                      </font>
                      <style>-fx-border-color: transparent transparent #FF451F transparent; -fx-border-width: 0 0 2 0;</style>
                   </Label>
-                  <Label text="Populer" textFill="#999999">
+                  
+                  <Label onMouseClicked="#loadPopuler" text="Populer" textFill="#999999" style="-fx-cursor: hand;">
                      <font>
                         <Font name="System Bold" size="18.0" />
                      </font>
                   </Label>
+                  
                   <Region HBox.hgrow="ALWAYS" />
                   <TextField promptText="Cari resep..." style="-fx-background-radius: 20; -fx-border-color: #FFCCBC; -fx-border-radius: 20; -fx-background-color: white;" />
                </children>

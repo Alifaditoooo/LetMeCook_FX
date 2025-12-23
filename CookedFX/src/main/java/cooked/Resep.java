@@ -1,34 +1,30 @@
 package cooked;
 
 public class Resep {
-    private int id; // Jika pakai database, ini ID auto increment
+    private int id; // resep_id
     private String judul;
     private String deskripsi;
-    private String penulisUsername;
-    private String gambarFilename;
     
-    // FIELD BARU
+    private int penulisId;          // user_id_penulis
+    private String penulisUsername; // Nama user (hasil JOIN)
+    
+    private String gambarFilename;
     private String bahan;
     private String langkah;
     private int jumlahLike;
-    private boolean isDisukaiOlehSaya;
+    private boolean isDisukaiOlehSaya; 
 
-    // 1. CONSTRUCTOR KOSONG (Wajib ada untuk UploadController)
-    public Resep() {
-    }
+    public Resep() {}
 
-    // 2. CONSTRUCTOR LENGKAP (Opsional, jika dipakai database lama)
-    public Resep(int id, String judul, String deskripsi, String penulisUsername, String gambarFilename) {
-        this.id = id;
-        this.judul = judul;
-        this.deskripsi = deskripsi;
-        this.penulisUsername = penulisUsername;
-        this.gambarFilename = gambarFilename;
-    }
-
-    // --- GETTER & SETTER LAMA ---
+    // GETTER & SETTER LENGKAP
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
+
+    public int getPenulisId() { return penulisId; }
+    public void setPenulisId(int penulisId) { this.penulisId = penulisId; }
+
+    public String getPenulisUsername() { return penulisUsername; }
+    public void setPenulisUsername(String penulisUsername) { this.penulisUsername = penulisUsername; }
 
     public String getJudul() { return judul; }
     public void setJudul(String judul) { this.judul = judul; }
@@ -36,14 +32,9 @@ public class Resep {
     public String getDeskripsi() { return deskripsi; }
     public void setDeskripsi(String deskripsi) { this.deskripsi = deskripsi; }
 
-    public String getPenulisUsername() { return penulisUsername; }
-    public void setPenulisUsername(String penulisUsername) { this.penulisUsername = penulisUsername; }
-
     public String getGambarFilename() { return gambarFilename; }
     public void setGambarFilename(String gambarFilename) { this.gambarFilename = gambarFilename; }
 
-    // --- GETTER & SETTER BARU (YANG BIKIN ERROR) ---
-    
     public String getBahan() { return bahan; }
     public void setBahan(String bahan) { this.bahan = bahan; }
 
@@ -56,8 +47,5 @@ public class Resep {
     public boolean isDisukaiOlehSaya() { return isDisukaiOlehSaya; }
     public void setDisukaiOlehSaya(boolean disukaiOlehSaya) { this.isDisukaiOlehSaya = disukaiOlehSaya; }
 
-    // Method Logika Tambahan
-    public void tambahLike() {
-        this.jumlahLike++;
-    }
+    public void tambahLike() { this.jumlahLike++; }
 }

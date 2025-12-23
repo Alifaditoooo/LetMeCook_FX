@@ -1,5 +1,6 @@
 package controller;
 
+import cooked.LayananResep;
 import cooked.Resep;
 import java.io.IOException;
 import javafx.fxml.FXML;
@@ -24,8 +25,9 @@ public class ResepDetailController {
     @FXML private Button btnLike;
 
     private Resep currentResep;
+    // Panggil layanan untuk update data
+    private LayananResep layanan = new LayananResep();
 
-    // Method ini dipanggil dari Beranda untuk menerima data resep
     public void setResep(Resep resep) {
         this.currentResep = resep;
         
@@ -33,40 +35,31 @@ public class ResepDetailController {
         lblPenulis.setText(resep.getPenulisUsername());
         lblDeskripsi.setText(resep.getDeskripsi());
         
-        // Cek agar tidak error jika data kosong
-        lblBahan.setText(resep.getBahan() != null ? resep.getBahan() : "- Tidak ada data bahan");
-        lblLangkah.setText(resep.getLangkah() != null ? resep.getLangkah() : "- Tidak ada data langkah");
+        lblBahan.setText(resep.getBahan() != null ? resep.getBahan() : "-");
+        lblLangkah.setText(resep.getLangkah() != null ? resep.getLangkah() : "-");
 
-        // Load Gambar
         if (resep.getGambarFilename() != null && !resep.getGambarFilename().isEmpty()) {
             try {
                 String path = "file:C:\\CookedUploads\\" + resep.getGambarFilename();
                 imgResepHeader.setImage(new Image(path));
-            } catch (Exception e) {
-                // Jika gagal load gambar, biarkan default atau kosong
-            }
+            } catch (Exception e) {}
         }
         
-        updateLikeStatus();
+        updateLikeUI();
         
-        // Aksi Tombol Like
+        // AKSI TOMBOL LIKE
         btnLike.setOnAction(e -> {
-            if (currentResep.isDisukaiOlehSaya()) {
-                currentResep.setDisukaiOlehSaya(false);
-                currentResep.setJumlahLike(currentResep.getJumlahLike() - 1);
-            } else {
-                currentResep.setDisukaiOlehSaya(true);
-                currentResep.tambahLike();
-            }
-            updateLikeStatus();
+            layanan.toggleLike(currentResep); // Update data pusat
+            updateLikeUI(); // Update tampilan lokal
         });
     }
     
-    private void updateLikeStatus() {
+    private void updateLikeUI() {
         lblLikeCount.setText("❤ " + currentResep.getJumlahLike() + " Like");
+        
         if (currentResep.isDisukaiOlehSaya()) {
             btnLike.setText("UNLIKE 💔");
-            btnLike.setStyle("-fx-background-color: white; -fx-text-fill: #FF5722; -fx-background-radius: 20; -fx-font-weight: bold; -fx-cursor: hand;");
+            btnLike.setStyle("-fx-background-color: white; -fx-text-fill: #FF5722; -fx-background-radius: 20; -fx-font-weight: bold; -fx-cursor: hand; -fx-border-color: #FF5722; -fx-border-width: 2;");
         } else {
             btnLike.setText("LIKE ❤");
             btnLike.setStyle("-fx-background-color: #FF5722; -fx-text-fill: white; -fx-background-radius: 20; -fx-font-weight: bold; -fx-cursor: hand;");
