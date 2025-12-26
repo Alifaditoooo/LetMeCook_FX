@@ -10,9 +10,7 @@ public class LayananResep {
 
     private static User currentUser;
 
-    // --- AUTH ---
     public boolean login(String username, String password) {
-        // Mencocokkan dengan tabel users di db_cooked (3).sql
         String sql = "SELECT * FROM users WHERE username = ? AND password = ?";
         try (Connection conn = Koneksi.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -20,7 +18,6 @@ public class LayananResep {
             stmt.setString(2, password);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                // Menggunakan Constructor User(int, string, string)
                 currentUser = new User(rs.getInt("user_id"), rs.getString("username"), rs.getString("password"));
                 return true;
             }
@@ -41,11 +38,41 @@ public class LayananResep {
 
     public void logout() { currentUser = null; }
     public String getCurrentUsername() { return currentUser != null ? currentUser.getUsername() : "Tamu"; }
+    public User getCurrentUser() { return currentUser; }
 
-    // --- RESEP ---
     public List<Resep> getSemuaResep() {
         String sql = "SELECT r.*, u.username AS nama_penulis FROM resep r JOIN users u ON r.user_id_penulis = u.user_id ORDER BY r.resep_id DESC";
         return fetchResepList(sql);
+    }
+
+    public List<Resep> getResepPopuler() {
+        String sql = "SELECT r.*, u.username AS nama_penulis FROM resep r JOIN users u ON r.user_id_penulis = u.user_id WHERE r.jumlahLike > 0 ORDER BY r.jumlahLike DESC";
+        return fetchResepList(sql);
+    }
+
+    public List<Resep> getResepDisukai() {
+        if (currentUser == null) return new ArrayList<>();
+        String sql = "SELECT r.*, u.username AS nama_penulis FROM resep r " +
+                     "JOIN users u ON r.user_id_penulis = u.user_id " +
+                     "JOIN likes l ON r.resep_id = l.resep_id " +
+                     "WHERE l.user_id = ?";
+        return fetchResepListParam(sql, currentUser.getId());
+    }
+
+    public List<Resep> getResepTeman() {
+        if (currentUser == null) return new ArrayList<>();
+        String sql = "SELECT r.*, u.username AS nama_penulis FROM resep r " +
+                     "JOIN users u ON r.user_id_penulis = u.user_id " +
+                     "WHERE r.user_id_penulis IN (SELECT followed_id FROM follows WHERE follower_id = ?) " +
+                     "ORDER BY r.resep_id DESC";
+        return fetchResepListParam(sql, currentUser.getId());
+    }
+    
+    public List<Resep> getResepByUsername(String username) {
+        String sql = "SELECT r.*, u.username AS nama_penulis FROM resep r " +
+                     "JOIN users u ON r.user_id_penulis = u.user_id " +
+                     "WHERE u.username = ? ORDER BY r.resep_id DESC";
+        return fetchResepListStringParam(sql, username);
     }
 
     public void tambahResepBaru(Resep resep) {
@@ -63,37 +90,9 @@ public class LayananResep {
         } catch (Exception e) { e.printStackTrace(); }
     }
 
-    public List<Resep> getResepPopuler() {
-        String sql = "SELECT r.*, u.username AS nama_penulis FROM resep r JOIN users u ON r.user_id_penulis = u.user_id ORDER BY r.jumlahLike DESC";
-        return fetchResepList(sql);
-    }
-
-    public List<Resep> getResepDisukai() {
-        if (currentUser == null) return new ArrayList<>();
-        // Menggunakan tabel LIKES (kolom: user_id, resep_id)
-        String sql = "SELECT r.*, u.username AS nama_penulis FROM resep r " +
-                     "JOIN users u ON r.user_id_penulis = u.user_id " +
-                     "JOIN likes l ON r.resep_id = l.resep_id " +
-                     "WHERE l.user_id = ?";
-        return fetchResepListParam(sql, currentUser.getId());
-    }
-
-    public List<Resep> getResepTeman() {
-        if (currentUser == null) return new ArrayList<>();
-        // Pastikan tabel FOLLOWS sudah dibuat
-        String sql = "SELECT r.*, u.username AS nama_penulis FROM resep r " +
-                     "JOIN users u ON r.user_id_penulis = u.user_id " +
-                     "WHERE r.user_id_penulis IN (SELECT followed_id FROM follows WHERE follower_id = ?) " +
-                     "ORDER BY r.resep_id DESC";
-        return fetchResepListParam(sql, currentUser.getId());
-    }
-
-    // --- LOGIKA LIKE & FOLLOW ---
     public void toggleLike(Resep resep) {
         if (currentUser == null) return;
-        
         if (resep.isDisukaiOlehSaya()) {
-            // UNLIKE
             try (Connection conn = Koneksi.getConnection()) {
                 conn.createStatement().executeUpdate("DELETE FROM likes WHERE user_id=" + currentUser.getId() + " AND resep_id=" + resep.getId());
                 conn.createStatement().executeUpdate("UPDATE resep SET jumlahLike = jumlahLike - 1 WHERE resep_id=" + resep.getId());
@@ -101,7 +100,6 @@ public class LayananResep {
                 resep.setJumlahLike(resep.getJumlahLike() - 1);
             } catch (Exception e) { e.printStackTrace(); }
         } else {
-            // LIKE
             try (Connection conn = Koneksi.getConnection()) {
                 conn.createStatement().executeUpdate("INSERT INTO likes (user_id, resep_id) VALUES (" + currentUser.getId() + ", " + resep.getId() + ")");
                 conn.createStatement().executeUpdate("UPDATE resep SET jumlahLike = jumlahLike + 1 WHERE resep_id=" + resep.getId());
@@ -115,16 +113,23 @@ public class LayananResep {
         if (currentUser == null) return;
         int chefId = getUserIdByUsername(usernameChef);
         if (chefId == -1 || chefId == currentUser.getId()) return;
-
         try (Connection conn = Koneksi.getConnection()) {
              PreparedStatement stmt = conn.prepareStatement("INSERT IGNORE INTO follows (follower_id, followed_id) VALUES (?, ?)");
              stmt.setInt(1, currentUser.getId());
              stmt.setInt(2, chefId);
              stmt.executeUpdate();
-        } catch (Exception e) { 
-            // Jika error (misal tabel follows belum ada), print di console
-            System.out.println("Gagal follow: " + e.getMessage());
-        }
+        } catch (Exception e) { e.printStackTrace(); }
+    }
+    
+    public void hapusTeman(String usernameChef) {
+         if (currentUser == null) return;
+        int chefId = getUserIdByUsername(usernameChef);
+        try (Connection conn = Koneksi.getConnection()) {
+             PreparedStatement stmt = conn.prepareStatement("DELETE FROM follows WHERE follower_id=? AND followed_id=?");
+             stmt.setInt(1, currentUser.getId());
+             stmt.setInt(2, chefId);
+             stmt.executeUpdate();
+        } catch (Exception e) { e.printStackTrace(); }
     }
     
     public boolean isTeman(String usernameChef) {
@@ -139,18 +144,28 @@ public class LayananResep {
         } catch (Exception e) { return false; }
     }
     
-    public int getJumlahTeman() {
-        if (currentUser == null) return 0;
+    public int getFollowerCount(String username) {
+        int userId = getUserIdByUsername(username);
+        String sql = "SELECT COUNT(*) FROM follows WHERE followed_id = ?";
+        try (Connection conn = Koneksi.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, userId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) return rs.getInt(1);
+        } catch (Exception e) {}
+        return 0;
+    }
+    
+    public int getFollowingCount(String username) {
+        int userId = getUserIdByUsername(username);
         String sql = "SELECT COUNT(*) FROM follows WHERE follower_id = ?";
         try (Connection conn = Koneksi.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, currentUser.getId());
+            stmt.setInt(1, userId);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) return rs.getInt(1);
         } catch (Exception e) {}
         return 0;
     }
 
-    // --- HELPER ---
     private int getUserIdByUsername(String username) {
         try (Connection conn = Koneksi.getConnection(); 
              PreparedStatement stmt = conn.prepareStatement("SELECT user_id FROM users WHERE username = ?")) {
@@ -181,6 +196,17 @@ public class LayananResep {
         } catch (Exception e) { e.printStackTrace(); }
         return list;
     }
+    
+    private List<Resep> fetchResepListStringParam(String sql, String param) {
+        List<Resep> list = new ArrayList<>();
+        try (Connection conn = Koneksi.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, param);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) list.add(mapResep(rs));
+        } catch (Exception e) { e.printStackTrace(); }
+        return list;
+    }
 
     private Resep mapResep(ResultSet rs) throws Exception {
         Resep r = new Resep();
@@ -195,7 +221,6 @@ public class LayananResep {
         r.setJumlahLike(rs.getInt("jumlahLike"));
         
         if (currentUser != null) {
-            // Cek Like
             String checkLike = "SELECT like_id FROM likes WHERE user_id = " + currentUser.getId() + " AND resep_id = " + r.getId();
             try (Connection conn = Koneksi.getConnection(); ResultSet rsLike = conn.createStatement().executeQuery(checkLike)) {
                 if (rsLike.next()) r.setDisukaiOlehSaya(true);

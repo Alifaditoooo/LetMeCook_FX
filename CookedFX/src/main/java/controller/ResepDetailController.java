@@ -25,44 +25,52 @@ public class ResepDetailController {
     @FXML private Button btnLike;
 
     private Resep currentResep;
-    // Panggil layanan untuk update data
     private LayananResep layanan = new LayananResep();
 
     public void setResep(Resep resep) {
         this.currentResep = resep;
         
-        lblJudulHeader.setText(resep.getJudul());
-        lblPenulis.setText(resep.getPenulisUsername());
-        lblDeskripsi.setText(resep.getDeskripsi());
-        
-        lblBahan.setText(resep.getBahan() != null ? resep.getBahan() : "-");
-        lblLangkah.setText(resep.getLangkah() != null ? resep.getLangkah() : "-");
+        // Safety Check: Pastikan elemen UI sudah dimuat sebelum diisi
+        if (lblJudulHeader != null) lblJudulHeader.setText(resep.getJudul());
+        if (lblPenulis != null) lblPenulis.setText(resep.getPenulisUsername());
+        if (lblDeskripsi != null) lblDeskripsi.setText(resep.getDeskripsi());
+        if (lblBahan != null) lblBahan.setText(resep.getBahan() != null ? resep.getBahan() : "-");
+        if (lblLangkah != null) lblLangkah.setText(resep.getLangkah() != null ? resep.getLangkah() : "-");
 
         if (resep.getGambarFilename() != null && !resep.getGambarFilename().isEmpty()) {
             try {
                 String path = "file:C:\\CookedUploads\\" + resep.getGambarFilename();
-                imgResepHeader.setImage(new Image(path));
+                if (imgResepHeader != null) imgResepHeader.setImage(new Image(path));
             } catch (Exception e) {}
         }
         
+        // Panggil update UI
         updateLikeUI();
         
-        // AKSI TOMBOL LIKE
-        btnLike.setOnAction(e -> {
-            layanan.toggleLike(currentResep); // Update data pusat
-            updateLikeUI(); // Update tampilan lokal
-        });
+        // Pasang aksi tombol Like dengan Safety Check
+        if (btnLike != null) {
+            btnLike.setOnAction(e -> {
+                layanan.toggleLike(currentResep); 
+                updateLikeUI(); 
+            });
+        } else {
+            System.out.println("PERINGATAN: btnLike masih NULL (mungkin belum ter-load)");
+        }
     }
     
     private void updateLikeUI() {
-        lblLikeCount.setText("❤ " + currentResep.getJumlahLike() + " Like");
+        if (lblLikeCount != null) {
+            lblLikeCount.setText("❤ " + currentResep.getJumlahLike() + " Like");
+        }
         
-        if (currentResep.isDisukaiOlehSaya()) {
-            btnLike.setText("UNLIKE 💔");
-            btnLike.setStyle("-fx-background-color: white; -fx-text-fill: #FF5722; -fx-background-radius: 20; -fx-font-weight: bold; -fx-cursor: hand; -fx-border-color: #FF5722; -fx-border-width: 2;");
-        } else {
-            btnLike.setText("LIKE ❤");
-            btnLike.setStyle("-fx-background-color: #FF5722; -fx-text-fill: white; -fx-background-radius: 20; -fx-font-weight: bold; -fx-cursor: hand;");
+        if (btnLike != null) {
+            if (currentResep.isDisukaiOlehSaya()) {
+                btnLike.setText("UNLIKE 💔");
+                btnLike.setStyle("-fx-background-color: white; -fx-text-fill: #FF5722; -fx-background-radius: 20; -fx-font-weight: bold; -fx-cursor: hand; -fx-border-color: #FF5722; -fx-border-width: 2;");
+            } else {
+                btnLike.setText("LIKE ❤");
+                btnLike.setStyle("-fx-background-color: #FF5722; -fx-text-fill: white; -fx-background-radius: 20; -fx-font-weight: bold; -fx-cursor: hand;");
+            }
         }
     }
 
@@ -73,8 +81,6 @@ public class ResepDetailController {
             Parent root = loader.load();
             Stage stage = (Stage) lblJudulHeader.getScene().getWindow();
             stage.setScene(new Scene(root));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        } catch (IOException e) { e.printStackTrace(); }
     }
 }

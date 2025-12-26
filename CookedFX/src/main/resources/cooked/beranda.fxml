@@ -67,15 +67,6 @@
                </padding>
             </Button>
 
-            <Button onAction="#loadDisukai" alignment="BASELINE_LEFT" mnemonicParsing="false" prefHeight="45.0" prefWidth="250.0" style="-fx-background-color: transparent; -fx-text-fill: WHITE; -fx-cursor: hand;" text="Histori">
-               <font>
-                  <Font size="14.0" />
-               </font>
-               <padding>
-                  <Insets left="20.0" />
-               </padding>
-            </Button>
-
             <Button onAction="#loadDisukai" alignment="BASELINE_LEFT" mnemonicParsing="false" prefHeight="45.0" prefWidth="250.0" style="-fx-background-color: transparent; -fx-text-fill: WHITE; -fx-cursor: hand;" text="Disukai">
                <font>
                   <Font size="14.0" />
@@ -144,16 +135,6 @@
                   </FlowPane>
                </content>
             </ScrollPane>
-            
-            <HBox alignment="CENTER" prefHeight="50.0" spacing="10.0" style="-fx-background-color: #FFF8E7;">
-               <children>
-                  <Button style="-fx-background-color: transparent; -fx-border-color: #FFAB91; -fx-text-fill: #FF451F;" text="&lt;" />
-                  <Button style="-fx-background-color: #FF451F; -fx-text-fill: white;" text="1" />
-                  <Button style="-fx-background-color: transparent; -fx-border-color: #FFAB91; -fx-text-fill: #FF451F;" text="2" />
-                  <Button style="-fx-background-color: transparent; -fx-border-color: #FFAB91; -fx-text-fill: #FF451F;" text="3" />
-                  <Button style="-fx-background-color: transparent; -fx-border-color: #FFAB91; -fx-text-fill: #FF451F;" text="&gt;" />
-               </children>
-            </HBox>
          </children>
       </VBox>
    </center>

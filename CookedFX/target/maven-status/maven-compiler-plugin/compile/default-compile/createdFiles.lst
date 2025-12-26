@@ -1,3 +1,4 @@
+controller\ProfileController.class
 controller\ResepDetailController.class
 cooked\User.class
 controller\UploadController.class
