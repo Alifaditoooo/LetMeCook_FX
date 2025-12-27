@@ -13,13 +13,13 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
-import javafx.scene.layout.StackPane; // PENTING: Import Baru
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
@@ -28,19 +28,20 @@ public class BerandaController {
     @FXML private FlowPane feedContainer; 
     @FXML private Button btnLogout;
     @FXML private Label lblUsername;
+    @FXML private TextField inputSearch; // TextField Pencarian
     
     private LayananResep layanan = new LayananResep();
     private String currentTab = "ALL"; 
 
     public void initialize() {
         lblUsername.setText(layanan.getCurrentUsername()); 
-        // Klik nama sendiri -> Buka Profil
         lblUsername.setOnMouseClicked(e -> bukaHalamanProfil(layanan.getCurrentUsername()));
         lblUsername.setStyle("-fx-cursor: hand;");
         
         loadBeranda(); 
     }
 
+    // --- NAVIGASI UTAMA ---
     @FXML
     private void loadBeranda() {
         currentTab = "ALL";
@@ -73,10 +74,45 @@ public class BerandaController {
         tampilkanList(layanan.getResepDisukai()); 
     }
 
+    // --- FITUR SEARCH & FILTER BARU ---
+    @FXML
+    private void handleSearch() {
+        String keyword = inputSearch.getText();
+        if (keyword == null || keyword.trim().isEmpty()) {
+            loadBeranda();
+        } else {
+            currentTab = "SEARCH";
+            List<Resep> hasil = layanan.cariResep(keyword);
+            tampilkanList(hasil);
+        }
+    }
+
+    @FXML
+    private void filterRingan() {
+        filterByKategori("Makanan Ringan");
+    }
+
+    @FXML
+    private void filterBerat() {
+        filterByKategori("Makanan Berat");
+    }
+
+    @FXML
+    private void filterMinuman() {
+        filterByKategori("Minuman");
+    }
+
+    private void filterByKategori(String kategori) {
+        currentTab = "FILTER_" + kategori;
+        List<Resep> hasil = layanan.filterKategori(kategori);
+        tampilkanList(hasil);
+    }
+
+    // --- RENDER UI ---
     private void tampilkanList(List<Resep> listResep) {
         feedContainer.getChildren().clear(); 
         if (listResep.isEmpty()) {
-            Label kosong = new Label("Tidak ada resep...");
+            Label kosong = new Label("Tidak ada resep ditemukan...");
             kosong.setStyle("-fx-font-size: 16px; -fx-text-fill: #888;");
             feedContainer.getChildren().add(kosong);
         } else {
@@ -86,18 +122,15 @@ public class BerandaController {
         }
     }
 
-    // --- METODE PEMBUAT KARTU YANG BARU ---
-   // --- METODE PEMBUAT KARTU (Tampilan Bersih Ala Profil) ---
     private VBox buatKartuResep(Resep resep) {
         VBox kartu = new VBox(0);
         kartu.setStyle("-fx-background-color: white; -fx-background-radius: 10; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 0);");
         kartu.setPrefWidth(220); 
         
-        // 1. GAMBAR (Klik juga bisa buka detail)
         ImageView imgView = new ImageView();
         imgView.setFitWidth(220);
         imgView.setFitHeight(150);
-        imgView.setStyle("-fx-cursor: hand;"); // Ubah kursor jadi tangan
+        imgView.setStyle("-fx-cursor: hand;"); 
         try {
             if (resep.getGambarFilename() != null && !resep.getGambarFilename().isEmpty()) {
                 String path = "file:C:\\CookedUploads\\" + resep.getGambarFilename();
@@ -109,23 +142,16 @@ public class BerandaController {
         
         imgView.setOnMouseClicked(e -> bukaDetailResep(resep));
 
-        // 2. JUDUL SEBAGAI TOMBOL (Di Bawah Gambar)
-        // Kita tetap pakai Button agar area kliknya luas & pasti, tapi stylenya kita buat transparan.
         Button btnJudul = new Button(resep.getJudul());
         btnJudul.setPrefWidth(220);
         btnJudul.setWrapText(true);
-        btnJudul.setAlignment(Pos.CENTER_LEFT); // Rata Kiri
-        
-        // STYLE: Background Transparan, Teks Hitam (Mirip Profil)
+        btnJudul.setAlignment(Pos.CENTER_LEFT); 
         btnJudul.setStyle("-fx-background-color: transparent; -fx-text-fill: #333; -fx-font-weight: bold; -fx-font-size: 14px; -fx-cursor: hand; -fx-padding: 10 10 0 10;");
-        
-        // Aksi Klik Tombol
         btnJudul.setOnAction(e -> bukaDetailResep(resep));
 
-        // 3. ACTION BAR (Like & Penulis)
         HBox actionBox = new HBox(10);
         actionBox.setAlignment(Pos.CENTER_LEFT);
-        actionBox.setPadding(new Insets(5, 10, 10, 10)); // Padding dirapikan
+        actionBox.setPadding(new Insets(5, 10, 10, 10)); 
 
         Button btnLike = new Button(resep.isDisukaiOlehSaya() ? "❤" : "♡");
         btnLike.setStyle("-fx-background-color: transparent; -fx-text-fill: #FF451F; -fx-font-size: 18px; -fx-cursor: hand; -fx-padding: 0;");
@@ -145,43 +171,49 @@ public class BerandaController {
 
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
-        actionBox.getChildren().addAll(btnLike, lblJmlLike, spacer, lblPenulis);
+        
+        if (layanan.getCurrentUser() != null && layanan.getCurrentUser().getId() == resep.getPenulisId()) {
+            Button btnHapus = new Button("🗑");
+            btnHapus.setStyle("-fx-background-color: transparent; -fx-text-fill: #D32F2F; -fx-font-size: 14px; -fx-cursor: hand; -fx-padding: 0;");
+            
+            btnHapus.setOnAction(e -> {
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                alert.setTitle("Hapus Resep");
+                alert.setHeaderText("Hapus resep ini?");
+                alert.setContentText(resep.getJudul());
+                
+                alert.showAndWait().ifPresent(response -> {
+                    if (response == javafx.scene.control.ButtonType.OK) {
+                        layanan.hapusResep(resep.getId());
+                        if (currentTab.startsWith("FILTER_")) filterByKategori(currentTab.substring(7));
+                        else if (currentTab.equals("SEARCH")) handleSearch();
+                        else loadBeranda(); 
+                    }
+                });
+            });
+            actionBox.getChildren().addAll(btnLike, lblJmlLike, spacer, lblPenulis, btnHapus);
+        } else {
+            actionBox.getChildren().addAll(btnLike, lblJmlLike, spacer, lblPenulis);
+        }
 
-        // Gabungkan secara vertikal: Gambar -> Judul -> Info
         kartu.getChildren().addAll(imgView, btnJudul, actionBox);
         return kartu;
-    } 
-   private void bukaDetailResep(Resep resepDiklik) {
+    }
+    
+    private void bukaDetailResep(Resep resepDiklik) {
         try {
-            System.out.println("Mencoba membuka detail resep: " + resepDiklik.getJudul());
-            
-            // Cek apakah file FXML ditemukan
-            if (getClass().getResource("/cooked/resep_detail.fxml") == null) {
-                throw new IOException("File resep_detail.fxml TIDAK DITEMUKAN di folder resources/cooked/");
-            }
-
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/cooked/resep_detail.fxml"));
             Parent root = loader.load();
-            
             ResepDetailController detailController = loader.getController();
-            
-            // Cek apakah Controller ditemukan
-            if (detailController == null) {
-                throw new IOException("Controller ResepDetailController GAGAL dimuat. Cek fx:controller di FXML.");
-            }
-            
             detailController.setResep(resepDiklik);
-            
             Stage stage = (Stage) feedContainer.getScene().getWindow();
             stage.setScene(new Scene(root));
-            
         } catch (Exception e) { 
-            e.printStackTrace(); // Print error merah di bawah (Output)
-            
+            e.printStackTrace();
             Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Gagal Membuka Resep");
-            alert.setHeaderText("Terjadi Kesalahan Sistem");
-            alert.setContentText(e.getClass().getSimpleName() + ": " + e.getMessage());
+            alert.setTitle("Error");
+            alert.setHeaderText("Gagal Membuka Resep");
+            alert.setContentText(e.getMessage());
             alert.showAndWait();
         }
     }
@@ -194,7 +226,7 @@ public class BerandaController {
             profileController.setTargetUsername(usernameTarget);
             Stage stage = (Stage) feedContainer.getScene().getWindow();
             stage.setScene(new Scene(root));
-        } catch (IOException e) { e.printStackTrace(); }
+        } catch (Exception e) { e.printStackTrace(); }
     }
 
     @FXML private void bukaHalamanUpload() {

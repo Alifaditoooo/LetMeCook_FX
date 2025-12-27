@@ -109,7 +109,6 @@ public class ProfileController {
         kartu.setPrefWidth(200);
         kartu.setPadding(new Insets(0,0,10,0));
 
-        // FIX: Tambahkan aksi klik pada resep di profil
         kartu.setOnMouseClicked(e -> bukaDetailResep(resep));
 
         ImageView imgView = new ImageView();
@@ -127,10 +126,40 @@ public class ProfileController {
         Label lblJudul = new Label(resep.getJudul());
         lblJudul.setStyle("-fx-font-weight: bold; -fx-padding: 0 10 0 10;");
         
-        Label lblLike = new Label("❤ " + resep.getJumlahLike() + " Suka");
-        lblLike.setStyle("-fx-text-fill: #FF451F; -fx-padding: 0 10 0 10; -fx-font-size: 12px;");
+        javafx.scene.layout.HBox bottomBox = new javafx.scene.layout.HBox(10);
+        bottomBox.setPadding(new Insets(0, 10, 0, 10));
+        bottomBox.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
 
-        kartu.getChildren().addAll(imgView, lblJudul, lblLike);
+        Label lblLike = new Label("❤ " + resep.getJumlahLike());
+        lblLike.setStyle("-fx-text-fill: #FF451F; -fx-font-size: 12px;");
+        
+        javafx.scene.layout.Region spacer = new javafx.scene.layout.Region();
+        javafx.scene.layout.HBox.setHgrow(spacer, javafx.scene.layout.Priority.ALWAYS);
+
+        bottomBox.getChildren().addAll(lblLike, spacer);
+
+        if (layanan.getCurrentUser() != null && layanan.getCurrentUser().getId() == resep.getPenulisId()) {
+            Button btnHapus = new Button("🗑");
+            btnHapus.setStyle("-fx-background-color: transparent; -fx-text-fill: #D32F2F; -fx-font-weight: bold; -fx-padding: 0;");
+            
+            btnHapus.setOnAction(e -> {
+                e.consume();
+                javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.CONFIRMATION);
+                alert.setTitle("Hapus Resep");
+                alert.setHeaderText("Hapus resep ini?");
+                alert.setContentText(resep.getJudul());
+                
+                alert.showAndWait().ifPresent(response -> {
+                    if (response == javafx.scene.control.ButtonType.OK) {
+                        layanan.hapusResep(resep.getId());
+                        refreshProfile();
+                    }
+                });
+            });
+            bottomBox.getChildren().add(btnHapus);
+        }
+
+        kartu.getChildren().addAll(imgView, lblJudul, bottomBox);
         return kartu;
     }
 

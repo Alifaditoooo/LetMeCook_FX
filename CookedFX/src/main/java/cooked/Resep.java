@@ -1,22 +1,20 @@
 package cooked;
 
 public class Resep {
-    private int id; // resep_id
+    private int id; 
     private String judul;
     private String deskripsi;
-    
-    private int penulisId;          // user_id_penulis
-    private String penulisUsername; // Nama user (hasil JOIN)
-    
+    private int penulisId;          
+    private String penulisUsername; 
     private String gambarFilename;
     private String bahan;
     private String langkah;
     private int jumlahLike;
     private boolean isDisukaiOlehSaya; 
+    private String kategori; 
 
     public Resep() {}
 
-    // GETTER & SETTER LENGKAP
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
 
@@ -48,4 +46,7 @@ public class Resep {
     public void setDisukaiOlehSaya(boolean disukaiOlehSaya) { this.isDisukaiOlehSaya = disukaiOlehSaya; }
 
     public void tambahLike() { this.jumlahLike++; }
+
+    public String getKategori() { return kategori; }
+    public void setKategori(String kategori) { this.kategori = kategori; }
 }

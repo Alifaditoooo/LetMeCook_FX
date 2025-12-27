@@ -75,9 +75,32 @@ public class LayananResep {
         return fetchResepListStringParam(sql, username);
     }
 
+    public List<Resep> cariResep(String keyword) {
+        String sql = "SELECT r.*, u.username AS nama_penulis FROM resep r " +
+                     "JOIN users u ON r.user_id_penulis = u.user_id " +
+                     "WHERE r.judul LIKE ? OR r.bahan LIKE ? ORDER BY r.resep_id DESC";
+        List<Resep> list = new ArrayList<>();
+        try (Connection conn = Koneksi.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            String likePattern = "%" + keyword + "%";
+            stmt.setString(1, likePattern);
+            stmt.setString(2, likePattern);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) list.add(mapResep(rs));
+        } catch (Exception e) { e.printStackTrace(); }
+        return list;
+    }
+
+    public List<Resep> filterKategori(String kategori) {
+        String sql = "SELECT r.*, u.username AS nama_penulis FROM resep r " +
+                     "JOIN users u ON r.user_id_penulis = u.user_id " +
+                     "WHERE r.kategori = ? ORDER BY r.resep_id DESC";
+        return fetchResepListStringParam(sql, kategori);
+    }
+
     public void tambahResepBaru(Resep resep) {
         if (currentUser == null) return;
-        String sql = "INSERT INTO resep (judul, deskripsi, user_id_penulis, gambar_filename, bahan, langkah, jumlahLike) VALUES (?, ?, ?, ?, ?, ?, 0)";
+        String sql = "INSERT INTO resep (judul, deskripsi, user_id_penulis, gambar_filename, bahan, langkah, jumlahLike, kategori) VALUES (?, ?, ?, ?, ?, ?, 0, ?)";
         try (Connection conn = Koneksi.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, resep.getJudul());
@@ -86,6 +109,7 @@ public class LayananResep {
             stmt.setString(4, resep.getGambarFilename());
             stmt.setString(5, resep.getBahan());
             stmt.setString(6, resep.getLangkah());
+            stmt.setString(7, resep.getKategori());
             stmt.executeUpdate();
         } catch (Exception e) { e.printStackTrace(); }
     }
@@ -106,6 +130,28 @@ public class LayananResep {
                 resep.setDisukaiOlehSaya(true);
                 resep.tambahLike();
             } catch (Exception e) { e.printStackTrace(); }
+        }
+    }
+
+    public boolean hapusResep(int resepId) {
+        if (currentUser == null) return false;
+        String sqlHapusLikes = "DELETE FROM likes WHERE resep_id = ?";
+        String sqlHapusResep = "DELETE FROM resep WHERE resep_id = ? AND user_id_penulis = ?"; 
+
+        try (Connection conn = Koneksi.getConnection()) {
+            try (PreparedStatement stmtLikes = conn.prepareStatement(sqlHapusLikes)) {
+                stmtLikes.setInt(1, resepId);
+                stmtLikes.executeUpdate();
+            }
+            try (PreparedStatement stmtResep = conn.prepareStatement(sqlHapusResep)) {
+                stmtResep.setInt(1, resepId);
+                stmtResep.setInt(2, currentUser.getId());
+                int rowsAffected = stmtResep.executeUpdate();
+                return rowsAffected > 0;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
         }
     }
 
@@ -219,6 +265,7 @@ public class LayananResep {
         r.setBahan(rs.getString("bahan"));
         r.setLangkah(rs.getString("langkah"));
         r.setJumlahLike(rs.getInt("jumlahLike"));
+        r.setKategori(rs.getString("kategori"));
         
         if (currentUser != null) {
             String checkLike = "SELECT like_id FROM likes WHERE user_id = " + currentUser.getId() + " AND resep_id = " + r.getId();

@@ -12,6 +12,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
@@ -25,13 +26,19 @@ public class UploadController {
     @FXML private TextArea inputDeskripsi;
     @FXML private TextArea inputBahan;
     @FXML private TextArea inputLangkah;
+    @FXML private ComboBox<String> inputKategori; // UPDATE: Jadi ComboBox
     @FXML private ImageView previewGambar;
     @FXML private Button btnPilihGambar;
     @FXML private Button btnUpload;
-    // btnBatal tidak wajib ada fx:id nya di java kalau cuma dipakai di onAction, tapi boleh tetap ada.
 
     private File fileGambarTerpilih;
     private LayananResep layanan = new LayananResep();
+
+    @FXML
+    public void initialize() {
+        // Isi pilihan kategori
+        inputKategori.getItems().addAll("Makanan Ringan", "Makanan Berat", "Minuman");
+    }
 
     @FXML
     private void handlePilihGambar() {
@@ -50,30 +57,25 @@ public class UploadController {
 
     @FXML
     private void handleUpload() {
-        // 1. Validasi Input
         if (inputJudul.getText().isEmpty() || inputDeskripsi.getText().isEmpty() || 
-            inputBahan.getText().isEmpty() || inputLangkah.getText().isEmpty()) {
+            inputBahan.getText().isEmpty() || inputLangkah.getText().isEmpty() ||
+            inputKategori.getValue() == null) {
             
-            tampilkanAlert("Error", "Mohon isi semua kolom (Judul, Deskripsi, Bahan, Langkah)!");
+            tampilkanAlert("Error", "Mohon isi semua kolom dan pilih kategori!");
             return;
         }
 
-        // 2. Buat Objek Resep Baru
         Resep resepBaru = new Resep();
         resepBaru.setJudul(inputJudul.getText());
         resepBaru.setDeskripsi(inputDeskripsi.getText());
-        resepBaru.setPenulisUsername("Chef Kamu"); 
-        resepBaru.setJumlahLike(0);
-        
-        // Simpan text dari inputan Chef
         resepBaru.setBahan(inputBahan.getText());
         resepBaru.setLangkah(inputLangkah.getText());
+        resepBaru.setKategori(inputKategori.getValue()); // Simpan Kategori
 
-        // 3. Proses Simpan Gambar
         if (fileGambarTerpilih != null) {
             try {
                 File folderUpload = new File("C:\\CookedUploads");
-                if (!folderUpload.exists()) folderUpload.mkdir();
+                if (!folderUpload.exists()) folderUpload.mkdirs();
 
                 String namaFileBaru = System.currentTimeMillis() + "_" + fileGambarTerpilih.getName();
                 File tujuan = new File(folderUpload, namaFileBaru);
@@ -87,11 +89,10 @@ public class UploadController {
             }
         }
 
-        // 4. Simpan ke Database Sementara
         layanan.tambahResepBaru(resepBaru);
 
         tampilkanAlert("Sukses", "Resep berhasil diposting!");
-        kembaliKeBeranda(); // Pindah halaman otomatis
+        kembaliKeBeranda();
     }
 
     @FXML
@@ -103,13 +104,9 @@ public class UploadController {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/cooked/beranda.fxml"));
             Parent root = loader.load();
-            
-         
             Stage stage = (Stage) inputJudul.getScene().getWindow();
             stage.setScene(new Scene(root));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        } catch (IOException e) { e.printStackTrace(); }
     }
 
     private void tampilkanAlert(String title, String content) {
