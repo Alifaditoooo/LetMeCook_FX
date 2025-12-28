@@ -59,6 +59,8 @@ public class LayananResep {
         return fetchResepListParam(sql, currentUser.getId());
     }
 
+    // --- (METODE LAMA getResepTeman DIGANTI DENGAN LOGIKA BARU DI CONTROLLER) ---
+    // Tapi kita biarkan jika masih dibutuhkan di tempat lain.
     public List<Resep> getResepTeman() {
         if (currentUser == null) return new ArrayList<>();
         String sql = "SELECT r.*, u.username AS nama_penulis FROM resep r " +
@@ -68,13 +70,32 @@ public class LayananResep {
         return fetchResepListParam(sql, currentUser.getId());
     }
     
+    // --- METODE BARU: AMBIL LIST USER TEMAN (UNTUK KARTU PROFIL) ---
+    public List<User> getTemanList() {
+        if (currentUser == null) return new ArrayList<>();
+        List<User> list = new ArrayList<>();
+        String sql = "SELECT u.user_id, u.username, u.password FROM users u " +
+                     "JOIN follows f ON u.user_id = f.followed_id " +
+                     "WHERE f.follower_id = ?";
+        try (Connection conn = Koneksi.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, currentUser.getId());
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                list.add(new User(rs.getInt("user_id"), rs.getString("username"), rs.getString("password")));
+            }
+        } catch (Exception e) { e.printStackTrace(); }
+        return list;
+    }
+    // -------------------------------------------------------------
+
     public List<Resep> getResepByUsername(String username) {
         String sql = "SELECT r.*, u.username AS nama_penulis FROM resep r " +
                      "JOIN users u ON r.user_id_penulis = u.user_id " +
                      "WHERE u.username = ? ORDER BY r.resep_id DESC";
         return fetchResepListStringParam(sql, username);
     }
-
+    
     public List<Resep> cariResep(String keyword) {
         String sql = "SELECT r.*, u.username AS nama_penulis FROM resep r " +
                      "JOIN users u ON r.user_id_penulis = u.user_id " +
@@ -132,7 +153,7 @@ public class LayananResep {
             } catch (Exception e) { e.printStackTrace(); }
         }
     }
-
+    
     public boolean hapusResep(int resepId) {
         if (currentUser == null) return false;
         String sqlHapusLikes = "DELETE FROM likes WHERE resep_id = ?";

@@ -2,6 +2,7 @@ package controller;
 
 import cooked.LayananResep;
 import cooked.Resep;
+import cooked.User; // PENTING: Import User
 import java.io.IOException;
 import java.util.List;
 import javafx.fxml.FXML;
@@ -21,6 +22,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.ImagePattern; // PENTING: Untuk gambar bulat
+import javafx.scene.shape.Circle; // PENTING: Untuk bentuk bulat
 import javafx.stage.Stage;
 
 public class BerandaController {
@@ -28,7 +31,7 @@ public class BerandaController {
     @FXML private FlowPane feedContainer; 
     @FXML private Button btnLogout;
     @FXML private Label lblUsername;
-    @FXML private TextField inputSearch; // TextField Pencarian
+    @FXML private TextField inputSearch; 
     
     private LayananResep layanan = new LayananResep();
     private String currentTab = "ALL"; 
@@ -41,7 +44,6 @@ public class BerandaController {
         loadBeranda(); 
     }
 
-    // --- NAVIGASI UTAMA ---
     @FXML
     private void loadBeranda() {
         currentTab = "ALL";
@@ -54,19 +56,28 @@ public class BerandaController {
         tampilkanList(layanan.getResepPopuler());
     }
     
+    // --- METODE LOAD TEMAN YANG BARU (MENAMPILKAN PROFIL) ---
     @FXML
     private void loadTeman() {
         currentTab = "TEMAN";
-        List<Resep> resepTeman = layanan.getResepTeman();
-        if (resepTeman.isEmpty()) {
-            feedContainer.getChildren().clear();
-            Label info = new Label("Belum ada resep dari teman.");
-            info.setStyle("-fx-font-size: 16px; -fx-text-fill: #888;");
-            feedContainer.getChildren().add(info);
+        List<User> temanList = layanan.getTemanList();
+        
+        feedContainer.getChildren().clear(); 
+        
+        if (temanList.isEmpty()) {
+            VBox kosongBox = new VBox(10);
+            kosongBox.setAlignment(Pos.CENTER);
+            Label kosong = new Label("Kamu belum mengikuti siapapun.");
+            kosong.setStyle("-fx-font-size: 16px; -fx-text-fill: #888;");
+            kosongBox.getChildren().add(kosong);
+            feedContainer.getChildren().add(kosongBox);
         } else {
-            tampilkanList(resepTeman);
+            for (User user : temanList) {
+                feedContainer.getChildren().add(buatKartuTeman(user));
+            }
         }
     }
+    // --------------------------------------------------------
 
     @FXML
     private void loadDisukai() {
@@ -74,7 +85,6 @@ public class BerandaController {
         tampilkanList(layanan.getResepDisukai()); 
     }
 
-    // --- FITUR SEARCH & FILTER BARU ---
     @FXML
     private void handleSearch() {
         String keyword = inputSearch.getText();
@@ -108,7 +118,6 @@ public class BerandaController {
         tampilkanList(hasil);
     }
 
-    // --- RENDER UI ---
     private void tampilkanList(List<Resep> listResep) {
         feedContainer.getChildren().clear(); 
         if (listResep.isEmpty()) {
@@ -122,6 +131,7 @@ public class BerandaController {
         }
     }
 
+    // --- PEMBUAT KARTU RESEP (LAMA) ---
     private VBox buatKartuResep(Resep resep) {
         VBox kartu = new VBox(0);
         kartu.setStyle("-fx-background-color: white; -fx-background-radius: 10; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 0);");
@@ -199,6 +209,43 @@ public class BerandaController {
         kartu.getChildren().addAll(imgView, btnJudul, actionBox);
         return kartu;
     }
+    
+    // --- METODE BARU: PEMBUAT KARTU TEMAN (PROFIL) ---
+    private VBox buatKartuTeman(User user) {
+        VBox kartu = new VBox(15);
+        kartu.setAlignment(Pos.CENTER);
+        kartu.setPadding(new Insets(25));
+        kartu.setStyle("-fx-background-color: white; -fx-background-radius: 20; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 0); -fx-cursor: hand;");
+        kartu.setPrefWidth(220); 
+        kartu.setPrefHeight(280);
+        
+        Circle avatar = new Circle(50);
+        avatar.setStroke(javafx.scene.paint.Color.WHITESMOKE);
+        avatar.setStrokeWidth(3);
+        try {
+            // Gunakan bg_home.png sebagai avatar default
+            avatar.setFill(new ImagePattern(new Image(getClass().getResource("/cooked/bg_home.png").toExternalForm())));
+        } catch (Exception e) {}
+
+        Label lblNama = new Label(user.getUsername());
+        lblNama.setWrapText(true);
+        lblNama.setStyle("-fx-font-weight: bold; -fx-font-size: 20px; -fx-text-fill: #333;");
+        
+        Label lblStatus = new Label("Chef Teman");
+        lblStatus.setStyle("-fx-font-size: 12px; -fx-text-fill: #999;");
+
+        Button btnVisit = new Button("Lihat Profil");
+        btnVisit.setPrefWidth(140);
+        btnVisit.setPrefHeight(35);
+        btnVisit.setStyle("-fx-background-color: #FF451F; -fx-text-fill: white; -fx-background-radius: 20; -fx-font-weight: bold; -fx-cursor: hand;");
+        
+        kartu.setOnMouseClicked(e -> bukaHalamanProfil(user.getUsername()));
+        btnVisit.setOnAction(e -> bukaHalamanProfil(user.getUsername()));
+        
+        kartu.getChildren().addAll(avatar, lblNama, lblStatus, btnVisit);
+        return kartu;
+    }
+    // -------------------------------------------------
     
     private void bukaDetailResep(Resep resepDiklik) {
         try {
