@@ -5,8 +5,6 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TextField?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.HBox?>
@@ -21,15 +19,13 @@
          <children>
             <VBox alignment="CENTER" spacing="5.0">
                <children>
-                  <ImageView fitHeight="80.0" fitWidth="80.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@bg_home.png" /> 
-                     </image>
-                  </ImageView>
                   <Label fx:id="lblUsername" text="Chef User" textFill="WHITE">
                      <font>
                         <Font name="System Bold" size="18.0" />
                      </font>
+                     <VBox.margin>
+                        <Insets top="20.0" />
+                     </VBox.margin>
                   </Label>
                </children>
                <padding>

@@ -9,23 +9,25 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="1366.0" style="-fx-background-color: #FFF8E7;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.ProfileController">
+<BorderPane fx:controller="controller.ProfileController" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="1366.0" style="-fx-background-color: #FFF8E7;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1">
    
    <left>
       <VBox prefHeight="768.0" prefWidth="250.0" spacing="10.0" style="-fx-background-color: #FF451F;" BorderPane.alignment="CENTER">
          <children>
-            <VBox alignment="CENTER" spacing="5.0">
-               <padding><Insets bottom="20.0" top="30.0" /></padding>
-               <ImageView fitHeight="80.0" fitWidth="80.0" pickOnBounds="true" preserveRatio="true">
-                  <image><Image url="@bg_home.png" /></image>
-               </ImageView>
-            </VBox>
-            <Button onAction="#handleBack" alignment="BASELINE_LEFT" prefHeight="45.0" prefWidth="250.0" style="-fx-background-color: transparent; -fx-text-fill: WHITE; -fx-cursor: hand;" text="⬅ Kembali ke Beranda">
-               <font><Font name="System Bold" size="14.0" /></font>
-               <padding><Insets left="20.0" /></padding>
+            
+            <Button alignment="BASELINE_LEFT" onAction="#handleBack" prefHeight="45.0" prefWidth="250.0" style="-fx-background-color: transparent; -fx-text-fill: WHITE; -fx-cursor: hand;" text="⬅ Kembali ke Beranda">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+               <padding>
+                  <Insets left="20.0" />
+               </padding>
+               <VBox.margin>
+                  <Insets top="40.0" /> </VBox.margin>
             </Button>
          </children>
       </VBox>
@@ -34,46 +36,95 @@
    <center>
       <ScrollPane fitToWidth="true" style="-fx-background-color: transparent; -fx-background: #FFF8E7;">
          <content>
-            <VBox alignment="TOP_CENTER" spacing="20.0" style="-fx-background-color: #FFF8E7;">
-               <padding><Insets bottom="50.0" top="40.0" /></padding>
+             <VBox alignment="TOP_CENTER" spacing="20.0" style="-fx-background-color: #FFF8E7;">
+               <padding>
+                  <Insets bottom="50.0" top="40.0" />
+               </padding>
                
                <VBox alignment="CENTER" maxWidth="800.0" spacing="15.0" style="-fx-background-color: white; -fx-background-radius: 20; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10,0,0,0);">
-                  <padding><Insets bottom="30.0" top="30.0" /></padding>
-                  <children>
-                     <ImageView fx:id="imgProfile" fitHeight="120.0" fitWidth="120.0" pickOnBounds="true" preserveRatio="true">
-                        <image><Image url="@bg_home.png" /></image>
-                     </ImageView>
+                  <padding>
+                     <Insets bottom="30.0" top="30.0" />
+                  </padding>
+                   <children>
                      
+                     <StackPane alignment="BOTTOM_RIGHT" maxHeight="120.0" maxWidth="120.0">
+                        <children>
+                           <ImageView fx:id="imgProfile" fitHeight="120.0" fitWidth="120.0" pickOnBounds="true" preserveRatio="true">
+                              <image>
+                                 <Image url="@bg_baru.png" />
+                              </image>
+                           </ImageView>
+                           
+                           <Button fx:id="btnEditFoto" onAction="#handleUploadFoto" text="+" textFill="WHITE" visible="false">
+                              <font>
+                                 <Font name="System Bold" size="18.0" />
+                              </font>
+                              <style>
+                                 -fx-background-color: #FF451F; 
+                                 -fx-background-radius: 100; 
+                                 -fx-min-width: 35px; 
+                                 -fx-min-height: 35px; 
+                                 -fx-max-width: 35px; 
+                                 -fx-max-height: 35px; 
+                                 -fx-cursor: hand;
+                                 -fx-padding: 0;
+                                 -fx-border-color: white;
+                                 -fx-border-width: 2px;
+                                 -fx-border-radius: 100;
+                              </style>
+                              <StackPane.margin>
+                                 <Insets bottom="0.0" right="0.0" />
+                              </StackPane.margin>
+                           </Button>
+                        </children>
+                     </StackPane>
+
                      <Label fx:id="lblUsernameHeader" text="Username" textFill="#ff451f">
-                        <font><Font name="System Bold" size="28.0" /></font>
+                        <font>
+                           <Font name="System Bold" size="28.0" />
+                        </font>
                      </Label>
                      
-                     <HBox alignment="CENTER" spacing="40.0">
+                      <HBox alignment="CENTER" spacing="40.0">
                         <VBox alignment="CENTER">
-                            <Label fx:id="lblFollowers" text="0" textFill="#333"><font><Font name="System Bold" size="20.0"/></font></Label>
-                            <Label text="Pengikut" textFill="#888"/>
+                            <Label fx:id="lblFollowers" text="0" textFill="#333">
+                               <font>
+                                  <Font name="System Bold" size="20.0" />
+                               </font>
+                            </Label>
+                             <Label text="Pengikut" textFill="#888" />
                         </VBox>
                         <VBox alignment="CENTER">
-                            <Label fx:id="lblFollowing" text="0" textFill="#333"><font><Font name="System Bold" size="20.0"/></font></Label>
-                            <Label text="Mengikuti" textFill="#888"/>
+                            <Label fx:id="lblFollowing" text="0" textFill="#333">
+                               <font>
+                                  <Font name="System Bold" size="20.0" />
+                               </font>
+                            </Label>
+                             <Label text="Mengikuti" textFill="#888" />
                         </VBox>
                      </HBox>
                      
-                     <Button fx:id="btnAction" prefWidth="200.0" style="-fx-font-weight: bold; -fx-font-size: 14px; -fx-cursor: hand; -fx-background-radius: 20;" text="Loading..." />
+                       <Button fx:id="btnAction" prefWidth="200.0" style="-fx-font-weight: bold; -fx-font-size: 14px; -fx-cursor: hand; -fx-background-radius: 20;" text="Loading..." />
                   </children>
                </VBox>
 
                <Label text="Galeri Resep" textFill="#ff451f">
-                   <font><Font name="System Bold" size="22.0" /></font>
-                   <VBox.margin><Insets top="10.0" /></VBox.margin>
-               </Label>
+                   <font>
+                      <Font name="System Bold" size="22.0" />
+                   </font>
+                   <VBox.margin>
+                      <Insets top="10.0" />
+                   </VBox.margin>
+                </Label>
 
                <FlowPane fx:id="gridResep" alignment="TOP_CENTER" hgap="20.0" vgap="20.0" style="-fx-background-color: #FFF8E7;">
-                  <padding><Insets left="50.0" right="50.0" /></padding>
+                  <padding>
+                     <Insets left="50.0" right="50.0" />
+                  </padding>
                </FlowPane>
                
             </VBox>
-         </content>
+           </content>
       </ScrollPane>
    </center>
 </BorderPane>

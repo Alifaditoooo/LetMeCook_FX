@@ -10,6 +10,7 @@ public class LayananResep {
 
     private static User currentUser;
 
+    // --- LOGIN & REGISTER ---
     public boolean login(String username, String password) {
         String sql = "SELECT * FROM users WHERE username = ? AND password = ?";
         try (Connection conn = Koneksi.getConnection();
@@ -40,6 +41,7 @@ public class LayananResep {
     public String getCurrentUsername() { return currentUser != null ? currentUser.getUsername() : "Tamu"; }
     public User getCurrentUser() { return currentUser; }
 
+    // --- GET RESEP ---
     public List<Resep> getSemuaResep() {
         String sql = "SELECT r.*, u.username AS nama_penulis FROM resep r JOIN users u ON r.user_id_penulis = u.user_id ORDER BY r.resep_id DESC";
         return fetchResepList(sql);
@@ -58,25 +60,23 @@ public class LayananResep {
                      "WHERE l.user_id = ?";
         return fetchResepListParam(sql, currentUser.getId());
     }
-
-    // --- (METODE LAMA getResepTeman DIGANTI DENGAN LOGIKA BARU DI CONTROLLER) ---
-    // Tapi kita biarkan jika masih dibutuhkan di tempat lain.
-    public List<Resep> getResepTeman() {
-        if (currentUser == null) return new ArrayList<>();
+    
+    public List<Resep> getResepByUsername(String username) {
         String sql = "SELECT r.*, u.username AS nama_penulis FROM resep r " +
                      "JOIN users u ON r.user_id_penulis = u.user_id " +
-                     "WHERE r.user_id_penulis IN (SELECT followed_id FROM follows WHERE follower_id = ?) " +
-                     "ORDER BY r.resep_id DESC";
-        return fetchResepListParam(sql, currentUser.getId());
+                     "WHERE u.username = ? ORDER BY r.resep_id DESC";
+        return fetchResepListStringParam(sql, username);
     }
-    
-    // --- METODE BARU: AMBIL LIST USER TEMAN (UNTUK KARTU PROFIL) ---
-    public List<User> getTemanList() {
-        if (currentUser == null) return new ArrayList<>();
+
+    // --- TEMAN & PROFILE (Pastikan Method Ini Ada) ---
+    public List<User> getDaftarTeman() {
         List<User> list = new ArrayList<>();
-        String sql = "SELECT u.user_id, u.username, u.password FROM users u " +
+        if (currentUser == null) return list;
+        
+        String sql = "SELECT u.* FROM users u " +
                      "JOIN follows f ON u.user_id = f.followed_id " +
                      "WHERE f.follower_id = ?";
+        
         try (Connection conn = Koneksi.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, currentUser.getId());
@@ -87,15 +87,8 @@ public class LayananResep {
         } catch (Exception e) { e.printStackTrace(); }
         return list;
     }
-    // -------------------------------------------------------------
-
-    public List<Resep> getResepByUsername(String username) {
-        String sql = "SELECT r.*, u.username AS nama_penulis FROM resep r " +
-                     "JOIN users u ON r.user_id_penulis = u.user_id " +
-                     "WHERE u.username = ? ORDER BY r.resep_id DESC";
-        return fetchResepListStringParam(sql, username);
-    }
     
+    // --- SEARCH & FILTER ---
     public List<Resep> cariResep(String keyword) {
         String sql = "SELECT r.*, u.username AS nama_penulis FROM resep r " +
                      "JOIN users u ON r.user_id_penulis = u.user_id " +
@@ -119,6 +112,7 @@ public class LayananResep {
         return fetchResepListStringParam(sql, kategori);
     }
 
+    // --- ACTIONS (Upload, Like, Hapus) ---
     public void tambahResepBaru(Resep resep) {
         if (currentUser == null) return;
         String sql = "INSERT INTO resep (judul, deskripsi, user_id_penulis, gambar_filename, bahan, langkah, jumlahLike, kategori) VALUES (?, ?, ?, ?, ?, ?, 0, ?)";
@@ -153,29 +147,17 @@ public class LayananResep {
             } catch (Exception e) { e.printStackTrace(); }
         }
     }
-    
+
     public boolean hapusResep(int resepId) {
         if (currentUser == null) return false;
-        String sqlHapusLikes = "DELETE FROM likes WHERE resep_id = ?";
-        String sqlHapusResep = "DELETE FROM resep WHERE resep_id = ? AND user_id_penulis = ?"; 
-
         try (Connection conn = Koneksi.getConnection()) {
-            try (PreparedStatement stmtLikes = conn.prepareStatement(sqlHapusLikes)) {
-                stmtLikes.setInt(1, resepId);
-                stmtLikes.executeUpdate();
-            }
-            try (PreparedStatement stmtResep = conn.prepareStatement(sqlHapusResep)) {
-                stmtResep.setInt(1, resepId);
-                stmtResep.setInt(2, currentUser.getId());
-                int rowsAffected = stmtResep.executeUpdate();
-                return rowsAffected > 0;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
+            conn.createStatement().executeUpdate("DELETE FROM likes WHERE resep_id = " + resepId);
+            int rows = conn.createStatement().executeUpdate("DELETE FROM resep WHERE resep_id = " + resepId + " AND user_id_penulis = " + currentUser.getId());
+            return rows > 0;
+        } catch (Exception e) { return false; }
     }
 
+    // --- FITUR FOLLOW TEMAN ---
     public void tambahTeman(String usernameChef) {
         if (currentUser == null) return;
         int chefId = getUserIdByUsername(usernameChef);
@@ -233,6 +215,7 @@ public class LayananResep {
         return 0;
     }
 
+    // --- HELPER METHODS ---
     private int getUserIdByUsername(String username) {
         try (Connection conn = Koneksi.getConnection(); 
              PreparedStatement stmt = conn.prepareStatement("SELECT user_id FROM users WHERE username = ?")) {

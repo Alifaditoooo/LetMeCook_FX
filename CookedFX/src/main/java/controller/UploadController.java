@@ -6,13 +6,14 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
@@ -22,97 +23,122 @@ import javafx.stage.Stage;
 
 public class UploadController {
 
-    @FXML private TextField inputJudul;
-    @FXML private TextArea inputDeskripsi;
-    @FXML private TextArea inputBahan;
-    @FXML private TextArea inputLangkah;
-    @FXML private ComboBox<String> inputKategori; // UPDATE: Jadi ComboBox
-    @FXML private ImageView previewGambar;
-    @FXML private Button btnPilihGambar;
-    @FXML private Button btnUpload;
+    @FXML private ImageView imgPreview;
+    @FXML private TextField txtJudul;
+    @FXML private TextArea txtDeskripsi;
+    @FXML private TextArea txtBahan;
+    @FXML private TextArea txtLangkah;
+    @FXML private Label lblKategoriTerpilih;
+    
+    // Tombol Kategori
+    @FXML private Button btnKatRingan;
+    @FXML private Button btnKatBerat;
+    @FXML private Button btnKatMinuman;
 
     private File fileGambarTerpilih;
+    private String kategori = "";
     private LayananResep layanan = new LayananResep();
+    
+    // Folder Upload (Sama dengan Beranda & Profile)
+    private static final String FOLDER_GAMBAR = "C:\\CookedUploads";
 
     @FXML
-    public void initialize() {
-        // Isi pilihan kategori
-        inputKategori.getItems().addAll("Makanan Ringan", "Makanan Berat", "Minuman");
-    }
-
-    @FXML
-    private void handlePilihGambar() {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Pilih Foto Masakan");
-        fileChooser.getExtensionFilters().addAll(
-            new FileChooser.ExtensionFilter("Gambar", "*.png", "*.jpg", "*.jpeg")
-        );
+    private void handlePilihFoto(ActionEvent event) {
+        FileChooser fc = new FileChooser();
+        fc.setTitle("Pilih Foto Masakan");
+        fc.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Gambar", "*.jpg", "*.png", "*.jpeg"));
         
-        File file = fileChooser.showOpenDialog(btnPilihGambar.getScene().getWindow());
+        File file = fc.showOpenDialog(imgPreview.getScene().getWindow());
         if (file != null) {
-            fileGambarTerpilih = file;
-            previewGambar.setImage(new Image(file.toURI().toString()));
+            this.fileGambarTerpilih = file;
+            imgPreview.setImage(new Image(file.toURI().toString()));
         }
     }
 
+    // --- PILIHAN KATEGORI ---
+    @FXML private void pilihKategoriRingan() { setKategori("Makanan Ringan", btnKatRingan); }
+    @FXML private void pilihKategoriBerat() { setKategori("Makanan Berat", btnKatBerat); }
+    @FXML private void pilihKategoriMinuman() { setKategori("Minuman", btnKatMinuman); }
+
+    private void setKategori(String kat, Button btnAktif) {
+        this.kategori = kat;
+        lblKategoriTerpilih.setText("Kategori: " + kat);
+        
+        // Reset style tombol lain
+        resetButtonStyle(btnKatRingan);
+        resetButtonStyle(btnKatBerat);
+        resetButtonStyle(btnKatMinuman);
+        
+        // Highlight tombol aktif
+        btnAktif.setStyle("-fx-background-color: #FF451F; -fx-text-fill: white; -fx-border-color: #FF451F; -fx-cursor: hand;");
+    }
+    
+    private void resetButtonStyle(Button btn) {
+        btn.setStyle("-fx-background-color: white; -fx-text-fill: black; -fx-border-color: #ddd; -fx-cursor: hand;");
+    }
+
     @FXML
-    private void handleUpload() {
-        if (inputJudul.getText().isEmpty() || inputDeskripsi.getText().isEmpty() || 
-            inputBahan.getText().isEmpty() || inputLangkah.getText().isEmpty() ||
-            inputKategori.getValue() == null) {
-            
-            tampilkanAlert("Error", "Mohon isi semua kolom dan pilih kategori!");
+    private void handlePost(ActionEvent event) {
+        if (txtJudul.getText().isEmpty() || kategori.isEmpty()) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Peringatan");
+            alert.setContentText("Judul dan Kategori wajib diisi!");
+            alert.show();
             return;
         }
 
-        Resep resepBaru = new Resep();
-        resepBaru.setJudul(inputJudul.getText());
-        resepBaru.setDeskripsi(inputDeskripsi.getText());
-        resepBaru.setBahan(inputBahan.getText());
-        resepBaru.setLangkah(inputLangkah.getText());
-        resepBaru.setKategori(inputKategori.getValue()); // Simpan Kategori
-
+        String namaFileGambar = "";
+        
+        // LOGIKA SIMPAN GAMBAR KE FOLDER C:\CookedUploads
         if (fileGambarTerpilih != null) {
             try {
-                File folderUpload = new File("C:\\CookedUploads");
-                if (!folderUpload.exists()) folderUpload.mkdirs();
-
-                String namaFileBaru = System.currentTimeMillis() + "_" + fileGambarTerpilih.getName();
-                File tujuan = new File(folderUpload, namaFileBaru);
-
+                File folder = new File(FOLDER_GAMBAR);
+                if (!folder.exists()) folder.mkdirs();
+                
+                // Nama file unik: resep_TIMESTAMP.jpg
+                namaFileGambar = "resep_" + System.currentTimeMillis() + ".jpg";
+                File tujuan = new File(folder, namaFileGambar);
+                
                 Files.copy(fileGambarTerpilih.toPath(), tujuan.toPath(), StandardCopyOption.REPLACE_EXISTING);
-                resepBaru.setGambarFilename(namaFileBaru);
-
+                
             } catch (IOException e) {
-                tampilkanAlert("Gagal", "Gagal mengupload gambar: " + e.getMessage());
+                e.printStackTrace();
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setContentText("Gagal upload gambar: " + e.getMessage());
+                alert.show();
                 return;
             }
         }
 
+        Resep resepBaru = new Resep();
+        resepBaru.setJudul(txtJudul.getText());
+        resepBaru.setDeskripsi(txtDeskripsi.getText());
+        resepBaru.setBahan(txtBahan.getText());
+        resepBaru.setLangkah(txtLangkah.getText());
+        resepBaru.setKategori(kategori);
+        resepBaru.setGambarFilename(namaFileGambar);
+
         layanan.tambahResepBaru(resepBaru);
 
-        tampilkanAlert("Sukses", "Resep berhasil diposting!");
-        kembaliKeBeranda();
+        Alert info = new Alert(Alert.AlertType.INFORMATION);
+        info.setTitle("Sukses");
+        info.setContentText("Resep berhasil diposting!");
+        info.showAndWait();
+
+        handleBack(null); // Kembali ke beranda
     }
 
     @FXML
-    private void handleBatal() {
-        kembaliKeBeranda();
-    }
-
-    private void kembaliKeBeranda() {
+    private void handleBack(ActionEvent event) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/cooked/beranda.fxml"));
             Parent root = loader.load();
-            Stage stage = (Stage) inputJudul.getScene().getWindow();
+            Stage stage = (Stage) txtJudul.getScene().getWindow();
             stage.setScene(new Scene(root));
+            
+            // Pastikan tetap maximized
+            stage.setMaximized(true);
+            
         } catch (IOException e) { e.printStackTrace(); }
-    }
-
-    private void tampilkanAlert(String title, String content) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(title);
-        alert.setContentText(content);
-        alert.showAndWait();
     }
 }
