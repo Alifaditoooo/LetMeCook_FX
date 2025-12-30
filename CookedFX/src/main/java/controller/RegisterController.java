@@ -33,7 +33,7 @@ public class RegisterController {
         if (layanan.register(username, password)) {
             infoBox("Akun berhasil dibuat! Silakan Login.", "Sukses");
             try {
-                // Kembali ke halaman Login setelah register
+                
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/cooked/login_form.fxml"));
                 Parent root = loader.load();
                 Stage stage = (Stage) btnDaftar.getScene().getWindow();

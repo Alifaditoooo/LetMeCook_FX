@@ -247,7 +247,7 @@ public class ProfileController {
     private void handleLogout() {
         layanan.logout();
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/cooked/login_form.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/cooked/Home.fxml"));
             Parent root = loader.load();
             Stage stage = (Stage) gridResep.getScene().getWindow();
             stage.setScene(new Scene(root));

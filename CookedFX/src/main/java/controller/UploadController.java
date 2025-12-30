@@ -30,16 +30,15 @@ public class UploadController {
     @FXML private TextArea txtLangkah;
     @FXML private Label lblKategoriTerpilih;
     
-    // Tombol Kategori
     @FXML private Button btnKatRingan;
     @FXML private Button btnKatBerat;
     @FXML private Button btnKatMinuman;
+    @FXML private Button btnPost;
 
     private File fileGambarTerpilih;
     private String kategori = "";
     private LayananResep layanan = new LayananResep();
     
-    // Folder Upload (Sama dengan Beranda & Profile)
     private static final String FOLDER_GAMBAR = "C:\\CookedUploads";
 
     @FXML
@@ -64,12 +63,10 @@ public class UploadController {
         this.kategori = kat;
         lblKategoriTerpilih.setText("Kategori: " + kat);
         
-        // Reset style tombol lain
         resetButtonStyle(btnKatRingan);
         resetButtonStyle(btnKatBerat);
         resetButtonStyle(btnKatMinuman);
         
-        // Highlight tombol aktif
         btnAktif.setStyle("-fx-background-color: #FF451F; -fx-text-fill: white; -fx-border-color: #FF451F; -fx-cursor: hand;");
     }
     
@@ -89,13 +86,11 @@ public class UploadController {
 
         String namaFileGambar = "";
         
-        // LOGIKA SIMPAN GAMBAR KE FOLDER C:\CookedUploads
         if (fileGambarTerpilih != null) {
             try {
                 File folder = new File(FOLDER_GAMBAR);
                 if (!folder.exists()) folder.mkdirs();
                 
-                // Nama file unik: resep_TIMESTAMP.jpg
                 namaFileGambar = "resep_" + System.currentTimeMillis() + ".jpg";
                 File tujuan = new File(folder, namaFileGambar);
                 
@@ -125,20 +120,32 @@ public class UploadController {
         info.setContentText("Resep berhasil diposting!");
         info.showAndWait();
 
-        handleBack(null); // Kembali ke beranda
+        handleBack(null);
     }
 
+    // --- KEMBALI KE BERANDA (CARA MANUAL / BIASA) ---
     @FXML
     private void handleBack(ActionEvent event) {
         try {
+            // Load FXML Beranda
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/cooked/beranda.fxml"));
             Parent root = loader.load();
+            
+            // Ambil Stage dari elemen UI yang ada (misal txtJudul)
             Stage stage = (Stage) txtJudul.getScene().getWindow();
+            
+            // Ganti Scene
             stage.setScene(new Scene(root));
             
-            // Pastikan tetap maximized
+            // Pastikan tetap full screen
             stage.setMaximized(true);
+            stage.show();
             
-        } catch (IOException e) { e.printStackTrace(); }
+        } catch (IOException e) { 
+            e.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setContentText("Gagal kembali ke Beranda: " + e.getMessage());
+            alert.show();
+        }
     }
 }

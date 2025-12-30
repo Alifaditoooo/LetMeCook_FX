@@ -5,10 +5,13 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
@@ -42,30 +45,27 @@
                </VBox.margin>
             </Label>
 
-            <Button onAction="#loadBeranda" alignment="BASELINE_LEFT" mnemonicParsing="false" prefHeight="45.0" prefWidth="250.0" style="-fx-background-color: WHITE; -fx-text-fill: #FF451F; -fx-background-radius: 30 0 0 30; -fx-cursor: hand;" text="Beranda">
+            <Button alignment="BASELINE_LEFT" mnemonicParsing="false" onAction="#loadBeranda" prefHeight="45.0" prefWidth="250.0" style="-fx-background-color: transparent; -fx-text-fill: WHITE; -fx-cursor: hand;" text="Beranda">
                <font>
                   <Font name="System Bold" size="14.0" />
                </font>
                <padding>
                   <Insets left="20.0" />
                </padding>
-               <VBox.margin>
-                  <Insets left="10.0" /> 
-               </VBox.margin>
             </Button>
 
-            <Button onAction="#loadTeman" alignment="BASELINE_LEFT" mnemonicParsing="false" prefHeight="45.0" prefWidth="250.0" style="-fx-background-color: transparent; -fx-text-fill: WHITE; -fx-cursor: hand;" text="Teman">
+            <Button alignment="BASELINE_LEFT" mnemonicParsing="false" onAction="#loadTeman" prefHeight="45.0" prefWidth="250.0" style="-fx-background-color: transparent; -fx-text-fill: WHITE; -fx-cursor: hand;" text="Teman">
                <font>
-                  <Font size="14.0" />
+                  <Font name="System Bold" size="14.0" />
                </font>
                <padding>
                   <Insets left="20.0" />
                </padding>
             </Button>
 
-            <Button onAction="#loadDisukai" alignment="BASELINE_LEFT" mnemonicParsing="false" prefHeight="45.0" prefWidth="250.0" style="-fx-background-color: transparent; -fx-text-fill: WHITE; -fx-cursor: hand;" text="Disukai">
+            <Button alignment="BASELINE_LEFT" mnemonicParsing="false" onAction="#loadDisukai" prefHeight="45.0" prefWidth="250.0" style="-fx-background-color: transparent; -fx-text-fill: WHITE; -fx-cursor: hand;" text="Disukai">
                <font>
-                  <Font size="14.0" />
+                  <Font name="System Bold" size="14.0" />
                </font>
                <padding>
                   <Insets left="20.0" />
@@ -97,47 +97,58 @@
    </left>
 
    <center>
-      <VBox prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
+      <StackPane BorderPane.alignment="CENTER">
          <children>
-            <VBox alignment="CENTER" spacing="15.0" style="-fx-background-color: #FFF8E7; -fx-padding: 20;">
+            
+            <ImageView fitHeight="768.0" fitWidth="1116.0" pickOnBounds="true" preserveRatio="false"> 
+               <image>
+                  <Image url="@background beranda.png" /> 
+               </image>
+            </ImageView>
+
+            <VBox prefHeight="200.0" prefWidth="100.0" style="-fx-background-color: transparent;">
                <children>
-                  
-                  <TextField fx:id="inputSearch" promptText="Cari nama resep..." prefWidth="500.0" maxWidth="600.0" onAction="#handleSearch" style="-fx-background-radius: 30; -fx-border-color: #FFCCBC; -fx-border-radius: 30; -fx-background-color: white; -fx-padding: 10;">
-                     <font>
-                        <Font size="14.0"/>
-                     </font>
-                  </TextField>
-
-                  <HBox alignment="CENTER" spacing="40.0">
+                  <VBox alignment="CENTER" spacing="15.0" style="-fx-background-color: transparent; -fx-padding: 20;">
                      <children>
-                        <Button onAction="#filterRingan" text="🍿" style="-fx-background-color: white; -fx-background-radius: 100; -fx-min-width: 70; -fx-min-height: 70; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 0); -fx-font-size: 32px; -fx-padding: 0; -fx-text-fill: black;" />
-                        <Button onAction="#filterBerat" text="🍛" style="-fx-background-color: white; -fx-background-radius: 100; -fx-min-width: 70; -fx-min-height: 70; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 0); -fx-font-size: 32px; -fx-padding: 0; -fx-text-fill: black;" />
-                        <Button onAction="#filterMinuman" text="🍸" style="-fx-background-color: white; -fx-background-radius: 100; -fx-min-width: 70; -fx-min-height: 70; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 0); -fx-font-size: 32px; -fx-padding: 0; -fx-text-fill: black;" />
-                     </children>
-                  </HBox>
+                        
+                        <TextField fx:id="inputSearch" maxWidth="600.0" onAction="#handleSearch" prefWidth="500.0" promptText="Cari nama resep..." style="-fx-background-radius: 30; -fx-border-color: #FFCCBC; -fx-border-radius: 30; -fx-background-color: white; -fx-padding: 10;">
+                           <font>
+                              <Font size="14.0" />
+                           </font>
+                        </TextField>
 
-                  <HBox alignment="CENTER_LEFT" spacing="30.0">
-                     <padding>
-                        <Insets left="20.0" top="10.0"/>
-                     </padding>
-                     <children>
-                        <Label onMouseClicked="#loadBeranda" text="For you" textFill="#ff451f" style="-fx-cursor: hand; -fx-font-weight: bold; -fx-font-size: 18px; -fx-border-color: transparent transparent #FF451F transparent; -fx-border-width: 0 0 3 0;" />
-                        <Label onMouseClicked="#loadPopuler" text="Populer" textFill="#999999" style="-fx-cursor: hand; -fx-font-weight: bold; -fx-font-size: 18px;"/>
+                        <HBox alignment="CENTER" spacing="40.0">
+                           <children>
+                              <Button onAction="#filterRingan" style="-fx-background-color: white; -fx-background-radius: 100; -fx-min-width: 70; -fx-min-height: 70; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 0); -fx-font-size: 32px; -fx-padding: 0; -fx-text-fill: black;" text="🍿" />
+                              <Button onAction="#filterBerat" style="-fx-background-color: white; -fx-background-radius: 100; -fx-min-width: 70; -fx-min-height: 70; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 0); -fx-font-size: 32px; -fx-padding: 0; -fx-text-fill: black;" text="🍛" />
+                              <Button onAction="#filterMinuman" style="-fx-background-color: white; -fx-background-radius: 100; -fx-min-width: 70; -fx-min-height: 70; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 0); -fx-font-size: 32px; -fx-padding: 0; -fx-text-fill: black;" text="🍸" />
+                           </children>
+                        </HBox>
+
+                        <HBox alignment="CENTER_LEFT" spacing="30.0">
+                           <padding>
+                              <Insets left="20.0" top="10.0" />
+                           </padding>
+                           <children>
+                              <Label onMouseClicked="#loadBeranda" style="-fx-cursor: hand; -fx-font-weight: bold; -fx-font-size: 18px; -fx-border-color: transparent transparent #FF451F transparent; -fx-border-width: 0 0 3 0;" text="For you" textFill="#ff451f" />
+                              <Label onMouseClicked="#loadPopuler" style="-fx-cursor: hand; -fx-font-weight: bold; -fx-font-size: 18px;" text="Populer" textFill="#999999" />
+                           </children>
+                        </HBox>
                      </children>
-                  </HBox>
+                  </VBox>
+
+                  <ScrollPane fitToWidth="true" hbarPolicy="NEVER" style="-fx-background-color: transparent; -fx-background: transparent;" VBox.vgrow="ALWAYS">
+                     <content>
+                        <FlowPane fx:id="feedContainer" hgap="20.0" style="-fx-background-color: transparent;" vgap="20.0">
+                           <padding>
+                              <Insets bottom="30.0" left="30.0" right="30.0" top="20.0" />
+                           </padding>
+                        </FlowPane>
+                     </content>
+                  </ScrollPane>
                </children>
             </VBox>
-
-            <ScrollPane fitToWidth="true" hbarPolicy="NEVER" style="-fx-background-color: transparent; -fx-background: transparent;" VBox.vgrow="ALWAYS">
-               <content>
-                  <FlowPane fx:id="feedContainer" hgap="20.0" vgap="20.0" style="-fx-background-color: #FFF8E7;">
-                     <padding>
-                        <Insets bottom="30.0" left="30.0" right="30.0" top="20.0" />
-                     </padding>
-                  </FlowPane>
-               </content>
-            </ScrollPane>
          </children>
-      </VBox>
+      </StackPane>
    </center>
 </BorderPane>

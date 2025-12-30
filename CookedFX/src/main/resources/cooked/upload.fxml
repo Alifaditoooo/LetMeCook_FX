@@ -48,13 +48,9 @@
                      <VBox spacing="10.0" alignment="CENTER">
                         <StackPane style="-fx-border-color: #ddd; -fx-border-style: dashed; -fx-border-width: 2; -fx-border-radius: 10;">
                            <padding><Insets bottom="20" left="20" right="20" top="20"/></padding>
-                           
-                           <ImageView fx:id="imgPreview" fitHeight="200.0" fitWidth="300.0" pickOnBounds="true" preserveRatio="true">
-                           </ImageView>
-                           
+                           <ImageView fx:id="imgPreview" fitHeight="200.0" fitWidth="300.0" pickOnBounds="true" preserveRatio="true"></ImageView>
                            <Label text="Preview Foto Akan Muncul Di Sini" textFill="#aaa" mouseTransparent="true"/>
                         </StackPane>
-                        
                         <Button fx:id="btnPilihFoto" onAction="#handlePilihFoto" text="Pilih Foto Masakan" style="-fx-background-color: white; -fx-text-fill: #333; -fx-border-color: #ddd; -fx-cursor: hand;"/>
                      </VBox>
 
@@ -88,20 +84,21 @@
                         <TextArea fx:id="txtLangkah" prefHeight="150.0" wrapText="true" promptText="1. Panaskan minyak...&#10;2. Masukkan bumbu..." style="-fx-font-size: 14px;"/>
                      </VBox>
                      
-                     <Region prefHeight="50.0" />
+                     <HBox alignment="CENTER_RIGHT" spacing="20.0">
+                        <padding>
+                           <Insets top="20.0" bottom="50.0" />
+                        </padding>
+                        <children>
+                           <Label text="Pastikan data sudah benar" textFill="#888" />
+                           <Button fx:id="btnPost" onAction="#handlePost" text="POSTING RESEP" textFill="WHITE" prefHeight="40.0" prefWidth="160.0" style="-fx-background-color: #FF451F; -fx-font-weight: bold; -fx-font-size: 14px; -fx-cursor: hand; -fx-background-radius: 10;">
+                           </Button>
+                        </children>
+                     </HBox>
 
                   </VBox>
                </content>
             </ScrollPane>
          </center>
-
-         <bottom>
-            <HBox alignment="CENTER_RIGHT" spacing="20.0" style="-fx-background-color: white; -fx-padding: 20; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 0, -5, 0, 0);">
-               <Label text="Pastikan data sudah benar" textFill="#888" />
-               <Button fx:id="btnPost" onAction="#handlePost" text="POSTING RESEP" textFill="WHITE" prefHeight="45.0" prefWidth="200.0" style="-fx-background-color: #FF451F; -fx-font-weight: bold; -fx-font-size: 16px; -fx-cursor: hand; -fx-background-radius: 10;">
-               </Button>
-            </HBox>
-         </bottom>
 
       </BorderPane>
    </center>

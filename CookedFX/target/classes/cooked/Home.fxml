@@ -10,7 +10,7 @@
    <children>
       <ImageView fitHeight="768.0" fitWidth="1366.0" layoutY="-50.0" pickOnBounds="true" preserveRatio="true">
          <image>
-            <Image url="@bg_baru.png" />
+            <Image url="@bg beranda.png" />
          </image>
       </ImageView>
 
