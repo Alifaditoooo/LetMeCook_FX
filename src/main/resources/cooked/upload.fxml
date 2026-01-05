@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane fx:controller="controller.UploadController" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="1366.0" style="-fx-background-color: #FFF8E7;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1">
+   
+   <left>
+      <VBox prefHeight="768.0" prefWidth="250.0" spacing="10.0" style="-fx-background-color: #FF451F;" BorderPane.alignment="CENTER">
+         <children>
+            <Button alignment="BASELINE_LEFT" onAction="#handleBack" prefHeight="45.0" prefWidth="250.0" style="-fx-background-color: transparent; -fx-text-fill: WHITE; -fx-cursor: hand;" text="⬅ Batal &amp; Kembali">
+               <font><Font name="System Bold" size="14.0" /></font>
+               <padding><Insets left="20.0" /></padding>
+               <VBox.margin><Insets top="40.0" /></VBox.margin>
+            </Button>
+         </children>
+      </VBox>
+   </left>
+
+   <center>
+      <BorderPane BorderPane.alignment="CENTER">
+         <top>
+            <HBox alignment="CENTER_LEFT" style="-fx-background-color: #FFF8E7; -fx-padding: 20;">
+               <Label text="Buat Resep Baru" textFill="#FF451F">
+                  <font><Font name="System Bold" size="28.0" /></font>
+               </Label>
+            </HBox>
+         </top>
+
+         <center>
+            <ScrollPane fitToWidth="true" hbarPolicy="NEVER" style="-fx-background-color: transparent; -fx-background: transparent;">
+               <content>
+                  <VBox spacing="20.0" style="-fx-background-color: #FFF8E7; -fx-padding: 20 40 20 40;">
+                     
+                     <VBox spacing="10.0" alignment="CENTER">
+                        <StackPane style="-fx-border-color: #ddd; -fx-border-style: dashed; -fx-border-width: 2; -fx-border-radius: 10;">
+                           <padding><Insets bottom="20" left="20" right="20" top="20"/></padding>
+                           <ImageView fx:id="imgPreview" fitHeight="200.0" fitWidth="300.0" pickOnBounds="true" preserveRatio="true"></ImageView>
+                           <Label text="Preview Foto Akan Muncul Di Sini" textFill="#aaa" mouseTransparent="true"/>
+                        </StackPane>
+                        <Button fx:id="btnPilihFoto" onAction="#handlePilihFoto" text="Pilih Foto Masakan" style="-fx-background-color: white; -fx-text-fill: #333; -fx-border-color: #ddd; -fx-cursor: hand;"/>
+                     </VBox>
+
+                     <VBox spacing="5.0">
+                        <Label text="Judul Resep" style="-fx-font-weight: bold;"/>
+                        <TextField fx:id="txtJudul" promptText="Contoh: Nasi Goreng Spesial" style="-fx-font-size: 14px; -fx-padding: 10;"/>
+                     </VBox>
+
+                     <VBox spacing="5.0">
+                        <Label text="Deskripsi Singkat" style="-fx-font-weight: bold;"/>
+                        <TextArea fx:id="txtDeskripsi" prefHeight="80.0" wrapText="true" promptText="Ceritakan sedikit tentang resep ini..." style="-fx-font-size: 14px;"/>
+                     </VBox>
+
+                     <VBox spacing="5.0">
+                        <Label text="Kategori" style="-fx-font-weight: bold;"/>
+                        <HBox spacing="15.0">
+                           <Button fx:id="btnKatRingan" onAction="#pilihKategoriRingan" text="Makanan Ringan" style="-fx-background-color: white; -fx-border-color: #ddd; -fx-cursor: hand;"/>
+                           <Button fx:id="btnKatBerat" onAction="#pilihKategoriBerat" text="Makanan Berat" style="-fx-background-color: white; -fx-border-color: #ddd; -fx-cursor: hand;"/>
+                           <Button fx:id="btnKatMinuman" onAction="#pilihKategoriMinuman" text="Minuman" style="-fx-background-color: white; -fx-border-color: #ddd; -fx-cursor: hand;"/>
+                        </HBox>
+                        <Label fx:id="lblKategoriTerpilih" text="Kategori: Belum dipilih" textFill="#FF451F" style="-fx-font-style: italic;"/>
+                     </VBox>
+
+                     <VBox spacing="5.0">
+                        <Label text="Bahan-bahan" style="-fx-font-weight: bold;"/>
+                        <TextArea fx:id="txtBahan" prefHeight="120.0" wrapText="true" promptText="- 1 piring nasi&#10;- 2 siung bawang..." style="-fx-font-size: 14px;"/>
+                     </VBox>
+
+                     <VBox spacing="5.0">
+                        <Label text="Langkah Pembuatan" style="-fx-font-weight: bold;"/>
+                        <TextArea fx:id="txtLangkah" prefHeight="150.0" wrapText="true" promptText="1. Panaskan minyak...&#10;2. Masukkan bumbu..." style="-fx-font-size: 14px;"/>
+                     </VBox>
+                     
+                     <HBox alignment="CENTER_RIGHT" spacing="20.0">
+                        <padding><Insets top="20.0" bottom="50.0" /></padding>
+                        <children>
+                           <Label text="Pastikan data sudah benar" textFill="#888" />
+                           <Button fx:id="btnPost" onAction="#handlePost" text="POSTING RESEP" textFill="WHITE" prefHeight="40.0" prefWidth="160.0" style="-fx-background-color: #FF451F; -fx-font-weight: bold; -fx-font-size: 14px; -fx-cursor: hand; -fx-background-radius: 10;"></Button>
+                        </children>
+                     </HBox>
+                  </VBox>
+               </content>
+            </ScrollPane>
+         </center>
+      </BorderPane>
+   </center>
+</BorderPane>
